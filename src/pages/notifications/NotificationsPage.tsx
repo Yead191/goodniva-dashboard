@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Bell, Shield, HelpCircle, TrendingUp, Users, Megaphone, UsersRound, CreditCard, Info, CheckCircle2, X, ArrowUpRight } from 'lucide-react'
+import { Bell, Shield, HelpCircle, TrendingUp, Users, Megaphone, UsersRound, CreditCard, Info, CheckCircle2, X, ArrowUpRight, type LucideIcon } from 'lucide-react'
 import PageHeader from '@/components/layout/PageHeader'
 import { Card, SecondaryButton } from '@/components/common'
 import { useNotifications } from '@/context/NotificationsContext'
@@ -19,7 +19,7 @@ const FILTERS: { key: FilterKey; label: string }[] = [
   { key: 'user', label: 'Users' },
 ]
 
-const iconMap: Record<NotificationType, { Icon: React.ComponentType<{ size?: number }>; bg: string; color: string }> = {
+const iconMap: Record<NotificationType, { Icon: LucideIcon; bg: string; color: string }> = {
   safety: { Icon: Shield, bg: colors.dangerLight, color: colors.danger },
   support: { Icon: HelpCircle, bg: colors.infoLight, color: colors.info },
   revenue: { Icon: TrendingUp, bg: colors.successLight, color: colors.success },
