@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { X, Users, UsersRound, Trophy, Target } from 'lucide-react'
+import { X, Users, UsersRound, Trophy, Target, type LucideIcon } from 'lucide-react'
 import { colors } from '@/utils/colors'
 import { Badge, PrimaryButton } from '@/components/common'
 import type { Community } from '@/types'
@@ -189,7 +189,7 @@ const ScoreboardTab = ({ community }: { community: Community }) => (
   </div>
 )
 
-const MiniStat = ({ Icon, label, value }: { Icon: React.ComponentType<{ size?: number; color?: string }>; label: string; value: string | number }) => (
+const MiniStat = ({ Icon, label, value }: { Icon: LucideIcon; label: string; value: string | number }) => (
   <div className="p-[14px] bg-surface-subtle border border-line-light rounded-xl">
     <Icon size={16} color={colors.primary} />
     <div className="text-xl font-bold text-ink-primary mt-2">{value}</div>

@@ -1,4 +1,4 @@
-import { X, CheckCircle2, MapPin, Calendar } from 'lucide-react'
+import { X, CheckCircle2, MapPin, Calendar, type LucideIcon } from 'lucide-react'
 import { colors } from '@/utils/colors'
 import { Badge, PrimaryButton } from '@/components/common'
 import { getStatusStyle } from '@/utils/statusStyles'
@@ -68,7 +68,7 @@ const PlanDetailsModal = ({ plan, onClose }: { plan: Plan; onClose: () => void }
   )
 }
 
-const DetailRow = ({ Icon, label, value, last }: { Icon: React.ComponentType<{ size?: number; color?: string }>; label: string; value: string; last?: boolean }) => (
+const DetailRow = ({ Icon, label, value, last }: { Icon: LucideIcon; label: string; value: string; last?: boolean }) => (
   <div className={`flex items-center gap-[10px] py-[10px] ${last ? '' : 'border-b border-line-light'}`}>
     <Icon size={15} color={colors.textMuted} />
     <span className="text-[13px] text-ink-secondary flex-1">{label}</span>

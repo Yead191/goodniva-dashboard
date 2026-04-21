@@ -12,13 +12,13 @@ interface CreateTicketModalProps {
   onSubmit: (ticket: CreateData) => void
 }
 
-const CATEGORIES = ['Account', 'Billing', 'Bug', 'Feature Request', 'Safety']
+const CATEGORIES: SupportTicket['category'][] = ['Account', 'Billing', 'Bug', 'Feature Request', 'Safety']
 const PRIORITIES: SupportTicket['priority'][] = ['Low', 'Medium', 'High']
 
 const CreateTicketModal = ({ onCancel, onSubmit }: CreateTicketModalProps) => {
   const { user } = useAuth()
   const [subject, setSubject] = useState('')
-  const [category, setCategory] = useState('Account')
+  const [category, setCategory] = useState<SupportTicket['category']>('Account')
   const [priority, setPriority] = useState<SupportTicket['priority']>('Medium')
   const [description, setDescription] = useState('')
   const [error, setError] = useState('')
@@ -63,7 +63,7 @@ const CreateTicketModal = ({ onCancel, onSubmit }: CreateTicketModalProps) => {
 
             <div className="grid grid-cols-2 gap-[14px] mb-4">
               <FieldWithLabel label="Category">
-                <SelectPill value={category} onChange={setCategory} options={CATEGORIES} />
+                <SelectPill value={category} onChange={(v) => setCategory(v as SupportTicket['category'])} options={CATEGORIES} />
               </FieldWithLabel>
               <div>
                 <label className="block text-[13px] font-semibold text-ink-primary mb-[6px]">Priority</label>

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { X, User, Tag, Clock, Send, CheckCircle2 } from 'lucide-react'
+import { X, User, Tag, Clock, Send, CheckCircle2, type LucideIcon } from 'lucide-react'
 import { getStatusStyle } from '@/utils/statusStyles'
 import type { SupportTicket, SupportMessage } from '@/types'
 
@@ -123,7 +123,7 @@ const TicketDetailsModal = ({ ticket, onClose, onReply, onStatusChange }: Ticket
   )
 }
 
-const MetaItem = ({ Icon, label }: { Icon: React.ComponentType<{ size?: number; className?: string }>; label: string }) => (
+const MetaItem = ({ Icon, label }: { Icon: LucideIcon; label: string }) => (
   <span className="inline-flex items-center gap-[5px] text-xs text-ink-secondary">
     <Icon size={13} className="text-ink-muted" />
     {label}

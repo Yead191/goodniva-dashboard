@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Send, Clock, Megaphone, Zap, Gift, Info, Bell, Mail, Smartphone, CheckCircle2, AlertCircle } from 'lucide-react'
+import { Send, Clock, Megaphone, Zap, Gift, Info, Bell, Mail, Smartphone, CheckCircle2, AlertCircle, type LucideIcon } from 'lucide-react'
 import PageHeader from '@/components/layout/PageHeader'
 import { Card, Badge, PrimaryButton, PillInput, SelectPill, FieldWithLabel } from '@/components/common'
 import { broadcastsSeed } from '@/data/broadcasts'
@@ -59,7 +59,7 @@ const BroadcastPage = () => {
     handleReset()
   }
 
-  const types: { key: BroadcastType; label: string; Icon: React.ComponentType<{ size?: number }> }[] = [
+  const types: { key: BroadcastType; label: string; Icon: LucideIcon }[] = [
     { key: 'announcement', label: 'Announcement', Icon: Megaphone },
     { key: 'warning', label: 'Warning', Icon: Zap },
     { key: 'promo', label: 'Promo', Icon: Gift },
@@ -201,7 +201,7 @@ const BroadcastPage = () => {
   )
 }
 
-const ChannelToggle = ({ Icon, label, active, onClick }: { Icon: React.ComponentType<{ size?: number }>; label: string; active: boolean; onClick: () => void }) => (
+const ChannelToggle = ({ Icon, label, active, onClick }: { Icon: LucideIcon; label: string; active: boolean; onClick: () => void }) => (
   <button onClick={onClick}
     className={`inline-flex items-center gap-2 py-[10px] px-[18px] rounded-pill text-[13px] font-semibold cursor-pointer transition-all duration-150 ${
       active
@@ -215,7 +215,7 @@ const ChannelToggle = ({ Icon, label, active, onClick }: { Icon: React.Component
 )
 
 const NotificationPreview = ({ title, message, type }: { title: string; message: string; type: BroadcastType }) => {
-  const typeConfig: Record<BroadcastType, { Icon: React.ComponentType<{ size?: number }>; color: string; bg: string }> = {
+  const typeConfig: Record<BroadcastType, { Icon: LucideIcon; color: string; bg: string }> = {
     announcement: { Icon: Megaphone, color: colors.primary, bg: colors.primaryLight },
     warning: { Icon: Zap, color: colors.warning, bg: colors.warningLight },
     promo: { Icon: Gift, color: '#EC4899', bg: '#FCE7F3' },

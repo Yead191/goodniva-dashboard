@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { User as UserIcon, Lock, HelpCircle, Info, Shield, FileText } from 'lucide-react'
+import { User as UserIcon, Lock, HelpCircle, Info, Shield, FileText, type LucideIcon } from 'lucide-react'
 import PageHeader from '@/components/layout/PageHeader'
 import { Card } from '@/components/common'
 import ProfileSection from './sections/ProfileSection'
@@ -10,7 +10,7 @@ import { defaultRichContent } from '@/data/faq'
 
 type Section = 'profile' | 'password' | 'faq' | 'about' | 'privacy' | 'terms'
 
-const sections: { key: Section; label: string; Icon: React.ComponentType<{ size?: number }> }[] = [
+const sections: { key: Section; label: string; Icon: LucideIcon }[] = [
   { key: 'profile', label: 'Profile', Icon: UserIcon },
   { key: 'password', label: 'Change Password', Icon: Lock },
   { key: 'faq', label: 'FAQ', Icon: HelpCircle },

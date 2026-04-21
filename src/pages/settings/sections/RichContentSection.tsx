@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Bold, Italic, Underline, List, ListOrdered, Link as LinkIcon, Type } from 'lucide-react'
+import { Bold, Italic, Underline, List, ListOrdered, Link as LinkIcon, Type, type LucideIcon } from 'lucide-react'
 import { PrimaryButton } from '@/components/common'
 import { useToast } from '@/context/ToastContext'
 import { colors } from '@/utils/colors'
@@ -90,7 +90,7 @@ const RichContentSection = ({ title, description, initialContent }: RichContentS
   )
 }
 
-const ToolbarButton = ({ Icon, onClick, title }: { Icon: React.ComponentType<{ size?: number }>; onClick: () => void; title: string }) => (
+const ToolbarButton = ({ Icon, onClick, title }: { Icon: LucideIcon; onClick: () => void; title: string }) => (
   <button onMouseDown={(e) => { e.preventDefault(); onClick() }} title={title}
     className="w-8 h-8 rounded-lg border-none bg-transparent text-ink-secondary cursor-pointer flex items-center justify-center transition-all duration-150 hover:bg-surface-input hover:text-ink-primary">
     <Icon size={15} />
