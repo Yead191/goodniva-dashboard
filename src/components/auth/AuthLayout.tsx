@@ -16,7 +16,9 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
             'linear-gradient(135deg, rgba(107,78,230,0.85) 0%, rgba(139,92,246,0.75) 100%), url(https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1200&q=80)',
         }}
       >
-        <Logo variant="light" />
+        <div className="">
+          <img src="/logoDark.svg" alt="" className='h-24' />
+        </div>
         <div className="absolute bottom-[60px] left-[60px] right-[60px]">
           <h2 className="text-[36px] font-extrabold leading-[1.2] mb-4">
             Build safer communities, one meetup at a time.
@@ -30,8 +32,8 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
       {/* Right: form */}
       <div className="flex-1 bg-white flex items-center justify-center py-10 px-6">
         <div className="border p-10 rounded-lg w-full max-w-[420px]">
-          <div className="mb-8">
-            <Logo />
+          <div className="mb-8 flex justify-center items-center">
+            <img src="/logo.svg" alt="" className='h-24' />
           </div>
           {children}
         </div>
