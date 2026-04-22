@@ -5,7 +5,7 @@ interface LogoProps {
 }
 
 const Logo = ({ variant = 'dark' }: LogoProps) => (
-  <div className="flex items-center gap-[10px]">
+  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
     <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="logo-grad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
@@ -20,7 +20,12 @@ const Logo = ({ variant = 'dark' }: LogoProps) => (
       <circle cx="16" cy="13" r="4" fill="#FFFFFF" />
     </svg>
     <span
-      className={`text-[18px] font-extrabold tracking-[-0.3px] ${variant === 'light' ? 'text-white' : 'text-ink-primary'}`}
+      style={{
+        fontSize: 18,
+        fontWeight: 800,
+        color: variant === 'light' ? '#FFFFFF' : colors.textPrimary,
+        letterSpacing: -0.3,
+      }}
     >
       GoodNiva
     </span>

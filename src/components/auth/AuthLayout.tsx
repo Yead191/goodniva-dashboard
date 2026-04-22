@@ -1,5 +1,4 @@
 import { ReactNode } from 'react'
-import Logo from '@/components/common/Logo'
 
 interface AuthLayoutProps {
   children: ReactNode
