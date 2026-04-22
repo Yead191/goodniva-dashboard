@@ -9,7 +9,7 @@ const LoginPage = () => {
   const { login } = useAuth()
   const navigate = useNavigate()
   const [email, setEmail] = useState('admin@goodniva.com')
-  const [password, setPassword] = useState('••••••••')
+  const [password, setPassword] = useState('admin1234')
   const [remember, setRemember] = useState(true)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -34,11 +34,11 @@ const LoginPage = () => {
 
   return (
     <AuthLayout>
-      <h1 className="text-[28px] font-bold text-[#0F172A] mb-2">
-        Welcome back
+      <h1 className="text-[28px] text-center font-bold text-[#0F172A] mb-2">
+        Login in to your account
       </h1>
-      <p className="text-sm text-[#475569] mb-7">
-        Sign in to your admin dashboard to continue.
+      <p className="text-sm text-[#475569] mb-7 text-center">
+        Please enter your email and password to continue
       </p>
 
       <form onSubmit={handleSubmit}>
