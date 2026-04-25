@@ -1,4 +1,50 @@
 // User types
+export type UserAccountStatus = 'active' | 'warned' | 'suspended' | 'banned'
+
+export interface UserRestrictions {
+  joining: boolean
+  hosting: boolean
+}
+
+export interface UserPlanRef {
+  id: number
+  title: string
+  date: string
+  category: string
+  status: 'Upcoming' | 'Completed' | 'Cancelled'
+}
+
+export interface AttendanceRecord {
+  planId: number
+  planTitle: string
+  date: string
+  outcome: 'Attended' | 'No-Show' | 'Cancelled'
+}
+
+export interface UserReport {
+  id: number
+  date: string
+  reason: string
+  reporter: string
+  status: 'Pending' | 'Reviewed' | 'Dismissed'
+}
+
+export interface ModeratorNote {
+  id: number
+  date: string
+  author: string
+  text: string
+}
+
+export interface UserActivity {
+  city: string
+  joinedPlans: UserPlanRef[]
+  hostedPlans: UserPlanRef[]
+  attendance: AttendanceRecord[]
+  reports: UserReport[]
+  moderatorNotes: ModeratorNote[]
+}
+
 export interface User {
   id: number
   name: string
@@ -7,8 +53,11 @@ export interface User {
   avatar: string
   subscription: 'Premium' | 'Professional' | 'Starter' | 'Free'
   verified: boolean
+  accountStatus: UserAccountStatus
+  restrictions: UserRestrictions
   identityInfo?: IdentityInfo
   interestInfo?: InterestInfo
+  activity?: UserActivity
 }
 
 export interface IdentityInfo {
@@ -31,6 +80,52 @@ export interface PlanHost {
   verified?: boolean
 }
 
+export interface PlanParticipant {
+  id: number
+  name: string
+  avatar: string
+  joinedAt: string
+  outcome: 'Attended' | 'No-Show' | 'Cancelled' | 'Pending'
+}
+
+export interface PlanReportRef {
+  id: number
+  date: string
+  reason: string
+  reporter: string
+  status: 'Pending' | 'Reviewed' | 'Dismissed'
+}
+
+export interface HostReliability {
+  totalHosted: number
+  completed: number
+  cancelled: number
+  noShowRate: number
+  rating: number
+  cancellationsLast30d: number
+}
+
+export interface PlanCancellationEvent {
+  date: string
+  by: 'Host' | 'Admin' | 'System'
+  reason: string
+}
+
+export interface PlanComplaint {
+  id: number
+  date: string
+  from: string
+  text: string
+  status: 'Open' | 'Resolved'
+}
+
+export interface PlanModerationNote {
+  id: number
+  date: string
+  author: string
+  text: string
+}
+
 export interface Plan {
   id: number
   name: string
@@ -46,6 +141,14 @@ export interface Plan {
   status: 'Active' | 'Cancelled' | 'Completed'
   location?: string
   description?: string
+  flagged?: boolean
+  flagReason?: string
+  participantList?: PlanParticipant[]
+  reports?: PlanReportRef[]
+  hostReliability?: HostReliability
+  cancellations?: PlanCancellationEvent[]
+  complaints?: PlanComplaint[]
+  moderationNotes?: PlanModerationNote[]
 }
 
 // Community types
@@ -136,6 +239,33 @@ export interface TriageHistoryEvent {
   by: string
 }
 
+export interface TriageLinkedPlan {
+  id: number
+  name: string
+  avatar: string
+  date: string
+  category?: string
+}
+
+export type TriageEvidenceKind = 'screenshot' | 'chat' | 'link' | 'note'
+
+export interface TriageEvidence {
+  id: number
+  kind: TriageEvidenceKind
+  caption: string
+  url?: string
+  addedAt: string
+}
+
+export interface TriageChatMessage {
+  id: number
+  from: 'admin' | 'reporter'
+  authorName: string
+  avatar: string
+  text: string
+  time: string
+}
+
 export interface TriageReport {
   id: number
   reportedUser: TriageUser
@@ -146,6 +276,9 @@ export interface TriageReport {
   status: 'PENDING' | 'REVIEWED' | 'RESOLVED'
   contentPreview: string
   history: TriageHistoryEvent[]
+  linkedPlan?: TriageLinkedPlan
+  evidence?: TriageEvidence[]
+  reporterChat?: TriageChatMessage[]
 }
 
 // Revenue types
@@ -228,6 +361,83 @@ export interface AdminNotification {
   actor: { name: string; avatar: string }
   actionLabel: string
   actionKey: string
+}
+
+// Action Centre types
+export type ActionCentreType =
+  | 'warn'
+  | 'restrictJoin'
+  | 'restrictHost'
+  | 'suspend'
+  | 'ban'
+  | 'reversal'
+
+export type ActionCentreStatus = 'Active' | 'Reversed' | 'Expired'
+
+export type ActionCentreCategory =
+  | 'Warnings'
+  | 'Restrictions'
+  | 'Suspensions'
+  | 'Bans'
+  | 'Reversals'
+
+export interface ActionCentreEntry {
+  id: number
+  type: ActionCentreType
+  target: { id: number; name: string; avatar: string; handle: string }
+  reason: string
+  source?: string
+  appliedBy: string
+  appliedAt: string
+  expiresAt?: string
+  status: ActionCentreStatus
+  reversedBy?: string
+  reversedAt?: string
+  reversalReason?: string
+  reversalOf?: number
+}
+
+// City Operations types
+export type CityHealth = 'Healthy' | 'Watch' | 'At Risk'
+
+export interface CityTrendPoint {
+  day: string
+  noShows: number
+  cancellations: number
+}
+
+export interface WeakZone {
+  name: string
+  joinedThisWeek: number
+  hostsActive: number
+  trend: 'down' | 'flat' | 'up'
+}
+
+export interface FlaggedPlanRef {
+  id: number
+  name: string
+  host: string
+  reason: string
+  date: string
+}
+
+export interface CityOps {
+  id: number
+  name: string
+  country: string
+  countryCode: string
+  status: CityHealth
+  population: string
+  plansToday: number
+  activeHosts: number
+  joinedUsersWeek: number
+  flaggedPlans: number
+  noShowRate7d: number
+  cancellationRate7d: number
+  trend: CityTrendPoint[]
+  weakZones: WeakZone[]
+  flaggedList: FlaggedPlanRef[]
+  notes?: string
 }
 
 // FAQ types

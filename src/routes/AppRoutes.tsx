@@ -17,6 +17,8 @@ import InterestPage from '@/pages/interest/InterestPage'
 import SubscriptionsPage from '@/pages/subscriptions/SubscriptionsPage'
 import RevenuePage from '@/pages/revenue/RevenuePage'
 import SafetyTriagePage from '@/pages/safety/SafetyTriagePage'
+import ActionCentrePage from '@/pages/actionCentre/ActionCentrePage'
+import CityOperationsPage from '@/pages/cityOps/CityOperationsPage'
 import BroadcastPage from '@/pages/broadcast/BroadcastPage'
 import SupportPage from '@/pages/support/SupportPage'
 import SettingsPage from '@/pages/settings/SettingsPage'
@@ -47,6 +49,8 @@ const AppRoutes = () => {
         <Route path="/subscriptions" element={<SubscriptionsPage />} />
         <Route path="/revenue" element={<RevenuePage />} />
         <Route path="/safety" element={<SafetyTriagePage />} />
+        <Route path="/action-centre" element={<ActionCentrePage />} />
+        <Route path="/city-operations" element={<CityOperationsPage />} />
         <Route path="/broadcast" element={<BroadcastPage />} />
         <Route path="/support" element={<SupportPage />} />
         <Route path="/settings" element={<SettingsPage />} />

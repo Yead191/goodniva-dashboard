@@ -16,6 +16,22 @@ export const triageSeed: TriageReport[] = [
       { date: 'Oct 18, 16:32:41', action: 'Report reviewed', note: 'Previous harassment report marked as resolved', by: 'Mod: Alex T.' },
       { date: 'Oct 10, 11:05:18', action: 'Joined platform', note: 'Account created from new device', by: 'System' },
     ],
+    linkedPlan: {
+      id: 101,
+      name: 'Crypto Investors Mixer',
+      avatar: 'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=200&q=80',
+      date: 'Oct 23, 2024 · 7:00 PM',
+      category: 'Networking',
+    },
+    evidence: [
+      { id: 1, kind: 'chat', caption: 'In-app DM thread with 14 unsolicited links', addedAt: 'Oct 24, 14:05' },
+      { id: 2, kind: 'screenshot', caption: 'Screenshot of repeated promo messages', url: 'https://example.com/evidence/crypto-dm.png', addedAt: 'Oct 24, 14:08' },
+    ],
+    reporterChat: [
+      { id: 1, from: 'reporter', authorName: 'Ben M.', avatar: 'https://i.pravatar.cc/80?img=45', text: 'I\'ve attached the chat thread. It started after I joined the Crypto Investors Mixer.', time: 'Oct 24, 14:05' },
+      { id: 2, from: 'admin', authorName: 'Mod: Sara', avatar: 'https://i.pravatar.cc/80?img=20', text: 'Thanks Ben — could you share dates of the most recent messages?', time: 'Oct 24, 14:12' },
+      { id: 3, from: 'reporter', authorName: 'Ben M.', avatar: 'https://i.pravatar.cc/80?img=45', text: 'Latest one was Oct 24 at 09:42. They created a second handle after I muted the first.', time: 'Oct 24, 14:18' },
+    ],
   },
   {
     id: 2,
@@ -28,6 +44,19 @@ export const triageSeed: TriageReport[] = [
     contentPreview: '"Keeps showing up at my meetups after being told not to attend. I feel unsafe."',
     history: [
       { date: 'Oct 23, 20:15:00', action: 'Report filed', note: 'First incident reported', by: 'User' },
+    ],
+    linkedPlan: {
+      id: 102,
+      name: 'Sunset Yoga at Hyde Park',
+      avatar: 'https://images.unsplash.com/photo-1545389336-cf090694435e?w=200&q=80',
+      date: 'Oct 23, 2024 · 6:00 PM',
+      category: 'Fitness',
+    },
+    evidence: [
+      { id: 3, kind: 'note', caption: 'Reporter says reported user attended 3 meetups despite being asked not to.', addedAt: 'Oct 23, 20:18' },
+    ],
+    reporterChat: [
+      { id: 1, from: 'reporter', authorName: 'Nabila K.', avatar: 'https://i.pravatar.cc/80?img=47', text: 'They showed up at the yoga session yesterday after I blocked them in DMs.', time: 'Oct 23, 20:15' },
     ],
   },
   {
@@ -43,6 +72,14 @@ export const triageSeed: TriageReport[] = [
       { date: 'Oct 24, 13:45:20', action: 'Report reviewed', note: 'Moderator reviewed chat logs', by: 'Mod: Sarah L.' },
       { date: 'Oct 20, 08:22:10', action: 'Report filed', note: 'Initial complaint submitted', by: 'User' },
     ],
+    evidence: [
+      { id: 4, kind: 'chat', caption: 'Chat log: 8 unwanted messages over 3 days', addedAt: 'Oct 20, 08:30' },
+      { id: 5, kind: 'screenshot', caption: 'Screenshot of inappropriate language', url: 'https://example.com/evidence/dm-screenshot.png', addedAt: 'Oct 20, 08:32' },
+    ],
+    reporterChat: [
+      { id: 1, from: 'reporter', authorName: 'Rafiq H.', avatar: 'https://i.pravatar.cc/80?img=33', text: 'Attached two screenshots. He kept messaging after I said no.', time: 'Oct 20, 08:30' },
+      { id: 2, from: 'admin', authorName: 'Mod: Sarah L.', avatar: 'https://i.pravatar.cc/80?img=21', text: 'Confirmed in our logs. Moving to formal review.', time: 'Oct 24, 13:45' },
+    ],
   },
   {
     id: 4,
@@ -54,6 +91,10 @@ export const triageSeed: TriageReport[] = [
     status: 'PENDING',
     contentPreview: '"Continuously promoting external services in chat channels."',
     history: [],
+    evidence: [
+      { id: 6, kind: 'link', caption: 'Promoted external link', url: 'https://promo.example.com/offer', addedAt: 'Oct 24, 12:20' },
+    ],
+    reporterChat: [],
   },
   {
     id: 5,
@@ -67,6 +108,13 @@ export const triageSeed: TriageReport[] = [
     history: [
       { date: 'Oct 22, 14:00:00', action: 'Account blocked', note: 'Previous account banned for violating ToS', by: 'Mod: Jim R.' },
     ],
+    evidence: [
+      { id: 7, kind: 'note', caption: '3 separate handles linked by device fingerprint', addedAt: 'Oct 24, 11:10' },
+      { id: 8, kind: 'screenshot', caption: 'Screenshot from new account messaging reporter', url: 'https://example.com/evidence/repeat.png', addedAt: 'Oct 24, 11:14' },
+    ],
+    reporterChat: [
+      { id: 1, from: 'reporter', authorName: 'Zara H.', avatar: 'https://i.pravatar.cc/80?img=48', text: 'He made a 3rd account this week. Same person, slightly different handle.', time: 'Oct 24, 11:08' },
+    ],
   },
   {
     id: 6,
@@ -78,6 +126,7 @@ export const triageSeed: TriageReport[] = [
     status: 'PENDING',
     contentPreview: '"Posted screenshots of private conversations without consent."',
     history: [],
+    reporterChat: [],
   },
   {
     id: 7,
@@ -89,5 +138,14 @@ export const triageSeed: TriageReport[] = [
     status: 'PENDING',
     contentPreview: '"Shared inappropriate content in a public group chat."',
     history: [],
+    linkedPlan: {
+      id: 107,
+      name: 'Board Games Night',
+      avatar: 'https://images.unsplash.com/photo-1606167668584-78701c57f13d?w=200&q=80',
+      date: 'Oct 23, 2024 · 8:00 PM',
+      category: 'Social',
+    },
+    evidence: [],
+    reporterChat: [],
   },
 ]

@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { Trash2, Lock, Ban, X, LucideIcon } from 'lucide-react'
+import { AlertTriangle, Ban, CircleSlash, Lock, RotateCcw, ShieldOff, Trash2, UserX, UsersRound, X, LucideIcon } from 'lucide-react'
 import { colors } from '@/utils/colors'
 import { SecondaryButton } from '@/components/common'
 
@@ -10,6 +10,16 @@ export type ConfirmAction =
   | 'hide'
   | 'deleteInterest'
   | 'blockUser'
+  | 'warn'
+  | 'restrictJoin'
+  | 'restrictHost'
+  | 'suspend'
+  | 'ban'
+  | 'removeRestriction'
+  | 'suspendCommunity'
+  | 'reactivateCommunity'
+  | 'deleteCommunity'
+  | 'reverseAction'
 
 interface ConfirmDialogProps {
   action: ConfirmAction
@@ -66,6 +76,66 @@ const ConfirmDialog = ({ action, userName, onCancel, onConfirm }: ConfirmDialogP
       title: 'Block User?',
       message: <>Are you sure you want to block <strong>{userName}</strong>? They will be removed from the platform and unable to create new accounts from the same device.</>,
       confirmLabel: 'Yes, Block User', confirmColor: colors.danger, confirmHover: '#DC2626',
+    },
+    warn: {
+      Icon: AlertTriangle, iconBg: colors.warningLight, iconColor: colors.warning,
+      title: 'Warn User?',
+      message: <>Send a formal warning to <strong>{userName}</strong>? They'll receive a notification explaining the policy concern.</>,
+      confirmLabel: 'Yes, Send Warning', confirmColor: colors.warning, confirmHover: '#D97706',
+    },
+    restrictJoin: {
+      Icon: CircleSlash, iconBg: colors.warningLight, iconColor: colors.warning,
+      title: 'Restrict Joining?',
+      message: <>Prevent <strong>{userName}</strong> from joining new plans? They can still host their own and use the rest of the platform.</>,
+      confirmLabel: 'Yes, Restrict Joining', confirmColor: colors.warning, confirmHover: '#D97706',
+    },
+    restrictHost: {
+      Icon: ShieldOff, iconBg: colors.warningLight, iconColor: colors.warning,
+      title: 'Restrict Hosting?',
+      message: <>Prevent <strong>{userName}</strong> from hosting new plans? They can still join others' plans.</>,
+      confirmLabel: 'Yes, Restrict Hosting', confirmColor: colors.warning, confirmHover: '#D97706',
+    },
+    suspend: {
+      Icon: Lock, iconBg: colors.warningLight, iconColor: colors.warning,
+      title: 'Suspend Account?',
+      message: <>Suspend <strong>{userName}</strong>'s account? They'll be signed out and unable to access the platform until reinstated.</>,
+      confirmLabel: 'Yes, Suspend', confirmColor: colors.warning, confirmHover: '#D97706',
+    },
+    ban: {
+      Icon: UserX, iconBg: colors.dangerLight, iconColor: colors.danger,
+      title: 'Ban User?',
+      message: <>Ban <strong>{userName}</strong> from the platform? This is a permanent action and they will lose access to all data and features.</>,
+      confirmLabel: 'Yes, Ban User', confirmColor: colors.danger, confirmHover: '#DC2626',
+    },
+    removeRestriction: {
+      Icon: ShieldOff, iconBg: colors.successLight, iconColor: colors.success,
+      title: 'Remove Restrictions?',
+      message: <>Lift all active restrictions and reinstate <strong>{userName}</strong> to good standing?</>,
+      confirmLabel: 'Yes, Remove Restrictions', confirmColor: colors.success, confirmHover: '#059669',
+    },
+    suspendCommunity: {
+      Icon: Lock, iconBg: colors.warningLight, iconColor: colors.warning,
+      title: 'Suspend Community?',
+      message: <>Suspend <strong>{userName}</strong>? Members won't be able to post, host plans, or run competitions until reactivated.</>,
+      confirmLabel: 'Yes, Suspend', confirmColor: colors.warning, confirmHover: '#D97706',
+    },
+    reactivateCommunity: {
+      Icon: UsersRound, iconBg: colors.successLight, iconColor: colors.success,
+      title: 'Reactivate Community?',
+      message: <>Reactivate <strong>{userName}</strong>? All members will regain access to posting, hosting, and competitions.</>,
+      confirmLabel: 'Yes, Reactivate', confirmColor: colors.success, confirmHover: '#059669',
+    },
+    deleteCommunity: {
+      Icon: Trash2, iconBg: colors.dangerLight, iconColor: colors.danger,
+      title: 'Delete Community?',
+      message: <>Permanently delete <strong>{userName}</strong>? All groups, scoreboards, and competition history will be removed. This cannot be undone.</>,
+      confirmLabel: 'Yes, Delete', confirmColor: colors.danger, confirmHover: '#DC2626',
+    },
+    reverseAction: {
+      Icon: RotateCcw, iconBg: colors.successLight, iconColor: colors.success,
+      title: 'Reverse Action?',
+      message: <>Reverse this moderation action against <strong>{userName}</strong>? It will be logged as a reversal in the action history.</>,
+      confirmLabel: 'Yes, Reverse', confirmColor: colors.success, confirmHover: '#059669',
     },
   }
 

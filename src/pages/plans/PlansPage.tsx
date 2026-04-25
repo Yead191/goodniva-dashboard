@@ -66,7 +66,14 @@ const PlanRow = ({ plan, onView, onBlock }: { plan: Plan; onView: () => void; on
       <td className="py-[14px] px-4 border-b border-line-light">
         <div className="flex items-center gap-3">
           <img src={plan.avatar} alt="" className="w-10 h-10 rounded-[10px] object-cover" />
-          <div className="text-sm font-semibold text-ink-primary">{plan.name}</div>
+          <div className="min-w-0">
+            <div className="text-sm font-semibold text-ink-primary">{plan.name}</div>
+            {plan.flagged && (
+              <div className="mt-[3px]">
+                <Badge text="• Flagged" bg={colors.dangerLight} color={colors.dangerText} />
+              </div>
+            )}
+          </div>
         </div>
       </td>
       <td className="py-[14px] px-4 border-b border-line-light">
