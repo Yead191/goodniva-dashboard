@@ -52,8 +52,8 @@ const Sidebar = () => {
 
   return (
     <aside className="w-[260px] bg-surface border-r border-line-light flex flex-col shrink-0 h-screen sticky top-0">
-      <div className="p-6 shrink-0">
-        <Logo />
+      <div className="p-6 shrink-0 flex justify-center items-center">
+        <img src="/logo.svg" alt="" className='h-24' />
       </div>
 
       <nav className="flex-1 px-[14px] overflow-y-auto overflow-x-hidden">
