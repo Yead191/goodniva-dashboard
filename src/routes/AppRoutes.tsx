@@ -23,6 +23,7 @@ import BroadcastPage from '@/pages/broadcast/BroadcastPage'
 import SupportPage from '@/pages/support/SupportPage'
 import SettingsPage from '@/pages/settings/SettingsPage'
 import NotificationsPage from '@/pages/notifications/NotificationsPage'
+import ManageAdminPage from '@/pages/manageAdmin/ManageAdminPage'
 
 const AppRoutes = () => {
   return (
@@ -55,6 +56,14 @@ const AppRoutes = () => {
         <Route path="/support" element={<SupportPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/notifications" element={<NotificationsPage />} />
+        <Route
+          path="/manage-admin"
+          element={
+            <ProtectedRoute requiredModule="manageAdmin">
+              <ManageAdminPage />
+            </ProtectedRoute>
+          }
+        />
       </Route>
 
       {/* Defaults */}
