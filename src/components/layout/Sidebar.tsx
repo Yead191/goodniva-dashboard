@@ -13,42 +13,47 @@ import {
   Bell,
   HelpCircle,
   Settings as SettingsIcon,
+  UserCog,
   LogOut,
   LucideIcon,
 } from 'lucide-react'
-import Logo from '@/components/common/Logo'
 import { useAuth } from '@/context/AuthContext'
+import type { ModuleKey } from '@/types/permissions'
 
 interface NavItem {
   to: string
   label: string
   Icon: LucideIcon
+  module: ModuleKey
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { to: '/dashboard', label: 'Dashboard', Icon: LayoutDashboard },
-  { to: '/users', label: 'User Management', Icon: Users },
-  { to: '/plans', label: 'Plans', Icon: Map },
-  { to: '/community', label: 'Community', Icon: UsersRound },
-  { to: '/interest', label: 'Interest', Icon: Command },
-  { to: '/subscriptions', label: 'Subscriptions', Icon: Crown },
-  { to: '/revenue', label: 'Revenue', Icon: TrendingUp },
-  { to: '/safety', label: 'Safety Triage', Icon: Shield },
-  { to: '/action-centre', label: 'Action Centre', Icon: Gavel },
-  { to: '/city-operations', label: 'City Operations', Icon: Globe },
-  { to: '/broadcast', label: 'Broadcast', Icon: Bell },
-  { to: '/support', label: 'Support', Icon: HelpCircle },
-  { to: '/settings', label: 'Settings', Icon: SettingsIcon },
+  { to: '/dashboard', label: 'Dashboard', Icon: LayoutDashboard, module: 'dashboard' },
+  { to: '/users', label: 'User Management', Icon: Users, module: 'users' },
+  { to: '/plans', label: 'Plans', Icon: Map, module: 'plans' },
+  { to: '/community', label: 'Community', Icon: UsersRound, module: 'community' },
+  { to: '/interest', label: 'Interest', Icon: Command, module: 'interest' },
+  { to: '/subscriptions', label: 'Subscriptions', Icon: Crown, module: 'subscriptions' },
+  { to: '/revenue', label: 'Revenue', Icon: TrendingUp, module: 'revenue' },
+  { to: '/safety', label: 'Safety Triage', Icon: Shield, module: 'safety' },
+  { to: '/action-centre', label: 'Action Centre', Icon: Gavel, module: 'actionCentre' },
+  { to: '/city-operations', label: 'City Operations', Icon: Globe, module: 'cityOps' },
+  { to: '/broadcast', label: 'Broadcast', Icon: Bell, module: 'broadcast' },
+  { to: '/support', label: 'Support', Icon: HelpCircle, module: 'support' },
+  { to: '/manage-admin', label: 'Manage Admin', Icon: UserCog, module: 'manageAdmin' },
+  { to: '/settings', label: 'Settings', Icon: SettingsIcon, module: 'settings' },
 ]
 
 const Sidebar = () => {
-  const { user, logout } = useAuth()
+  const { user, logout, hasPermission } = useAuth()
   const navigate = useNavigate()
 
   const handleLogout = () => {
     logout()
     navigate('/login')
   }
+
+  const visibleItems = NAV_ITEMS.filter((item) => hasPermission(item.module))
 
   return (
     <aside className="w-[260px] bg-surface border-r border-line-light flex flex-col shrink-0 h-screen sticky top-0">
@@ -57,7 +62,7 @@ const Sidebar = () => {
       </div>
 
       <nav className="flex-1 px-[14px] overflow-y-auto overflow-x-hidden">
-        {NAV_ITEMS.map(({ to, label, Icon }) => (
+        {visibleItems.map(({ to, label, Icon }) => (
           <NavLink
             key={to}
             to={to}

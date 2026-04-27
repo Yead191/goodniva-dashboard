@@ -13,7 +13,7 @@ const ProfileSection = () => {
   const [lastName, setLastName] = useState(user?.name?.split(' ').slice(1).join(' ') || 'Chen')
   const [email, setEmail] = useState(user?.email || 'admin@goodniva.com')
   const [phone, setPhone] = useState('+1 (555) 123-4567')
-  const [role] = useState(user?.role || 'Admin')
+  const [role] = useState(user?.role === 'super_admin' ? 'Super Admin' : 'Admin')
   const [avatar, setAvatar] = useState(user?.avatar || '')
 
   const handleFile = (file: File | null | undefined) => {

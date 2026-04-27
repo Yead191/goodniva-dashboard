@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { AlertTriangle, Ban, CircleSlash, Lock, RotateCcw, ShieldOff, Trash2, UserX, UsersRound, X, LucideIcon } from 'lucide-react'
+import { AlertTriangle, Ban, CircleSlash, Lock, RotateCcw, ShieldCheck, ShieldOff, Trash2, UserX, UsersRound, X, LucideIcon } from 'lucide-react'
 import { colors } from '@/utils/colors'
 import { SecondaryButton } from '@/components/common'
 
@@ -20,6 +20,9 @@ export type ConfirmAction =
   | 'reactivateCommunity'
   | 'deleteCommunity'
   | 'reverseAction'
+  | 'deleteAdmin'
+  | 'suspendAdmin'
+  | 'reactivateAdmin'
 
 interface ConfirmDialogProps {
   action: ConfirmAction
@@ -136,6 +139,24 @@ const ConfirmDialog = ({ action, userName, onCancel, onConfirm }: ConfirmDialogP
       title: 'Reverse Action?',
       message: <>Reverse this moderation action against <strong>{userName}</strong>? It will be logged as a reversal in the action history.</>,
       confirmLabel: 'Yes, Reverse', confirmColor: colors.success, confirmHover: '#059669',
+    },
+    deleteAdmin: {
+      Icon: Trash2, iconBg: colors.dangerLight, iconColor: colors.danger,
+      title: 'Delete Admin?',
+      message: <>Remove <strong>{userName}</strong> from the admin team? They will lose access to the dashboard immediately.</>,
+      confirmLabel: 'Yes, Delete Admin', confirmColor: colors.danger, confirmHover: '#DC2626',
+    },
+    suspendAdmin: {
+      Icon: Lock, iconBg: colors.warningLight, iconColor: colors.warning,
+      title: 'Suspend Admin?',
+      message: <>Suspend <strong>{userName}</strong>'s admin account? They won't be able to sign in until you reactivate them.</>,
+      confirmLabel: 'Yes, Suspend', confirmColor: colors.warning, confirmHover: '#D97706',
+    },
+    reactivateAdmin: {
+      Icon: ShieldCheck, iconBg: colors.successLight, iconColor: colors.success,
+      title: 'Reactivate Admin?',
+      message: <>Restore admin access for <strong>{userName}</strong>? Their previous permissions will be reinstated.</>,
+      confirmLabel: 'Yes, Reactivate', confirmColor: colors.success, confirmHover: '#059669',
     },
   }
 
