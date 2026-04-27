@@ -40,7 +40,7 @@ const InterestPage = () => {
     <div className="py-7 px-8">
       <PageHeader
         title="Interests"
-        subtitle="Manage user interests and categories"
+        subtitle="Manage user interests"
         action={
           <PrimaryButton
             Icon={Plus}
