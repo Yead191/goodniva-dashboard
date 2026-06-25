@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import {
   Ban,
   CircleSlash,
@@ -17,6 +18,7 @@ import ReportHistoryModal from '@/components/modals/ReportHistoryModal'
 import ConfirmDialog, { ConfirmAction } from '@/components/modals/ConfirmDialog'
 import { triageSeed } from '@/data/safety'
 import { useToast } from '@/context/ToastContext'
+import { useAnchoredMenu } from '@/hooks/useAnchoredMenu'
 import { colors } from '@/utils/colors'
 import { getStatusStyle, getUrgencyStyle } from '@/utils/statusStyles'
 import type { TriageChatMessage, TriageReport } from '@/types'
@@ -191,7 +193,6 @@ const SafetyRow = ({ row, onHistory, onView, onAction }: SafetyRowProps) => {
 interface ModerationMenuProps {
   onAction: (action: ModerationAction) => void
   buttonNode?: React.ReactNode
-  placement?: 'down' | 'up'
 }
 
 interface MenuItem {
@@ -209,18 +210,8 @@ export const moderationMenuItems: MenuItem[] = [
   { key: 'removeRestriction', label: 'Remove Restriction', Icon: ShieldCheck, tone: 'success' },
 ]
 
-export const ModerationMenu = ({ onAction, buttonNode, placement = 'down' }: ModerationMenuProps) => {
-  const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!open) return
-    const onDocClick = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
-    }
-    document.addEventListener('mousedown', onDocClick)
-    return () => document.removeEventListener('mousedown', onDocClick)
-  }, [open])
+export const ModerationMenu = ({ onAction, buttonNode }: ModerationMenuProps) => {
+  const { open, setOpen, triggerRef, menuRef, coords, toggle } = useAnchoredMenu(208)
 
   const toneClass = (tone: MenuItem['tone']) => {
     if (tone === 'danger') return 'text-danger hover:bg-danger-light'
@@ -229,29 +220,35 @@ export const ModerationMenu = ({ onAction, buttonNode, placement = 'down' }: Mod
   }
 
   return (
-    <div className="relative" ref={ref}>
+    <div className="inline-flex" ref={triggerRef}>
       {buttonNode ? (
-        <div onClick={() => setOpen((o) => !o)}>{buttonNode}</div>
+        <div onClick={toggle}>{buttonNode}</div>
       ) : (
-        <IconButton Icon={MoreVertical} tooltip="Moderation actions" onClick={() => setOpen((o) => !o)} />
+        <IconButton Icon={MoreVertical} tooltip="Moderation actions" onClick={toggle} />
       )}
-      {open && (
-        <div className={`absolute right-0 w-[208px] bg-surface rounded-[12px] border border-line-light shadow-modal z-20 py-1 animate-[fadeIn_0.15s_ease] ${placement === 'up' ? 'bottom-full mb-1' : 'top-full mt-1'}`}>
-          {moderationMenuItems.map((item) => (
-            <button
-              key={item.key}
-              onClick={() => {
-                setOpen(false)
-                onAction(item.key)
-              }}
-              className={`w-full flex items-center gap-2 px-3 py-2 text-[13px] font-medium text-left bg-transparent border-none cursor-pointer transition-colors ${toneClass(item.tone)}`}
-            >
-              <item.Icon size={15} />
-              {item.label}
-            </button>
-          ))}
-        </div>
-      )}
+      {open &&
+        createPortal(
+          <div
+            ref={menuRef}
+            style={{ position: 'fixed', top: coords.top, left: coords.left, width: 208 }}
+            className="bg-surface rounded-[12px] border border-line-light shadow-modal z-[110] py-1 animate-[fadeIn_0.15s_ease]"
+          >
+            {moderationMenuItems.map((item) => (
+              <button
+                key={item.key}
+                onClick={() => {
+                  setOpen(false)
+                  onAction(item.key)
+                }}
+                className={`w-full flex items-center gap-2 px-3 py-2 text-[13px] font-medium text-left bg-transparent border-none cursor-pointer transition-colors ${toneClass(item.tone)}`}
+              >
+                <item.Icon size={15} />
+                {item.label}
+              </button>
+            ))}
+          </div>,
+          document.body,
+        )}
     </div>
   )
 }

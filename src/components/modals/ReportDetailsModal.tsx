@@ -95,7 +95,6 @@ const ReportDetailsModal = ({ report, onClose, onAction, onResolve, onSendChat }
 
           <div className="py-[18px] px-7 border-t border-line-light flex gap-[10px] justify-end shrink-0">
             <ModerationMenu
-              placement="up"
               onAction={onAction}
               buttonNode={
                 <button className="inline-flex items-center justify-center gap-2 h-11 px-[22px] rounded-pill border-none text-sm font-semibold text-white cursor-pointer transition-colors duration-150 bg-danger hover:bg-[#DC2626]">

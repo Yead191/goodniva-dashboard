@@ -29,6 +29,7 @@ export type ConfirmAction =
   | 'deleteAdmin'
   | 'suspendAdmin'
   | 'reactivateAdmin'
+  | 'deleteCity'
 
 interface ConfirmDialogProps {
   action: ConfirmAction
@@ -199,6 +200,12 @@ const ConfirmDialog = ({ action, userName, onCancel, onConfirm }: ConfirmDialogP
       title: 'Reactivate Admin?',
       message: <>Restore admin access for <strong>{userName}</strong>? Their previous permissions will be reinstated.</>,
       confirmLabel: 'Yes, Reactivate', confirmColor: colors.success, confirmHover: '#059669',
+    },
+    deleteCity: {
+      Icon: Trash2, iconBg: colors.dangerLight, iconColor: colors.danger,
+      title: 'Delete City?',
+      message: <>Are you sure you want to remove <strong>{userName}</strong> from City Operations? This action cannot be undone.</>,
+      confirmLabel: 'Yes, Delete', confirmColor: colors.danger, confirmHover: '#DC2626',
     },
   }
 

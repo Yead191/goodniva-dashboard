@@ -6,20 +6,22 @@ import type { CityHealth, CityOps } from '@/types'
 interface CityFormModalProps {
   onCancel: () => void
   onSubmit: (data: Omit<CityOps, 'id'>) => void
+  initial?: CityOps
 }
 
 const STATUS_OPTIONS: CityHealth[] = ['Healthy', 'Watch', 'At Risk']
 
-const CityFormModal = ({ onCancel, onSubmit }: CityFormModalProps) => {
-  const [name, setName] = useState('')
-  const [country, setCountry] = useState('')
-  const [countryCode, setCountryCode] = useState('')
-  const [population, setPopulation] = useState('')
-  const [status, setStatus] = useState<CityHealth>('Healthy')
-  const [plansToday, setPlansToday] = useState('')
-  const [activeHosts, setActiveHosts] = useState('')
-  const [joinedUsersWeek, setJoinedUsersWeek] = useState('')
-  const [notes, setNotes] = useState('')
+const CityFormModal = ({ onCancel, onSubmit, initial }: CityFormModalProps) => {
+  const isEdit = !!initial
+  const [name, setName] = useState(initial?.name ?? '')
+  const [country, setCountry] = useState(initial?.country ?? '')
+  const [countryCode, setCountryCode] = useState(initial?.countryCode ?? '')
+  const [population, setPopulation] = useState(initial?.population && initial.population !== '—' ? initial.population : '')
+  const [status, setStatus] = useState<CityHealth>(initial?.status ?? 'Healthy')
+  const [plansToday, setPlansToday] = useState(initial ? String(initial.plansToday) : '')
+  const [activeHosts, setActiveHosts] = useState(initial ? String(initial.activeHosts) : '')
+  const [joinedUsersWeek, setJoinedUsersWeek] = useState(initial ? String(initial.joinedUsersWeek) : '')
+  const [notes, setNotes] = useState(initial?.notes ?? '')
 
   const valid = name.trim() !== '' && country.trim() !== ''
 
@@ -39,12 +41,12 @@ const CityFormModal = ({ onCancel, onSubmit }: CityFormModalProps) => {
       plansToday: toNum(plansToday),
       activeHosts: toNum(activeHosts),
       joinedUsersWeek: toNum(joinedUsersWeek),
-      flaggedPlans: 0,
-      noShowRate7d: 0,
-      cancellationRate7d: 0,
-      trend: [],
-      weakZones: [],
-      flaggedList: [],
+      flaggedPlans: initial?.flaggedPlans ?? 0,
+      noShowRate7d: initial?.noShowRate7d ?? 0,
+      cancellationRate7d: initial?.cancellationRate7d ?? 0,
+      trend: initial?.trend ?? [],
+      weakZones: initial?.weakZones ?? [],
+      flaggedList: initial?.flaggedList ?? [],
       notes: notes.trim() || undefined,
     })
   }
@@ -56,8 +58,8 @@ const CityFormModal = ({ onCancel, onSubmit }: CityFormModalProps) => {
         <div className="bg-surface rounded-[20px] w-full max-w-[560px] max-h-[92vh] flex flex-col pointer-events-auto shadow-modal animate-[modalSlide_0.25s_ease]">
           <div className="py-[22px] px-7 flex justify-between items-center shrink-0">
             <div>
-              <h2 className="text-xl font-bold text-ink-primary m-0">Add New City</h2>
-              <p className="text-[13px] text-ink-secondary mt-1 mb-0">Start tracking a new city's operations</p>
+              <h2 className="text-xl font-bold text-ink-primary m-0">{isEdit ? 'Edit City' : 'Add New City'}</h2>
+              <p className="text-[13px] text-ink-secondary mt-1 mb-0">{isEdit ? "Update this city's operations details" : "Start tracking a new city's operations"}</p>
             </div>
             <button onClick={onCancel} className="w-9 h-9 rounded-lg border-none bg-transparent cursor-pointer flex items-center justify-center text-ink-secondary hover:bg-surface-input transition-colors">
               <X size={20} />
@@ -106,7 +108,7 @@ const CityFormModal = ({ onCancel, onSubmit }: CityFormModalProps) => {
 
           <div className="py-[18px] px-7 border-t border-line-light flex gap-[10px] justify-end shrink-0">
             <DangerButton label="Cancel" onClick={onCancel} />
-            <PrimaryButton label="Add City" onClick={handleSubmit} disabled={!valid} />
+            <PrimaryButton label={isEdit ? 'Save Changes' : 'Add City'} onClick={handleSubmit} disabled={!valid} />
           </div>
         </div>
       </div>

@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import {
   AlertTriangle,
   Ban,
@@ -18,6 +19,7 @@ import UserDetailsModal from '@/components/modals/UserDetailsModal'
 import ConfirmDialog, { ConfirmAction } from '@/components/modals/ConfirmDialog'
 import { usersSeed } from '@/data/users'
 import { useToast } from '@/context/ToastContext'
+import { useAnchoredMenu } from '@/hooks/useAnchoredMenu'
 import { colors } from '@/utils/colors'
 import type { User, UserAccountStatus } from '@/types'
 
@@ -185,17 +187,7 @@ interface MenuItem {
 }
 
 const ActionsMenu = ({ user, canRemoveRestriction, onAction }: ActionsMenuProps) => {
-  const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!open) return
-    const onDocClick = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
-    }
-    document.addEventListener('mousedown', onDocClick)
-    return () => document.removeEventListener('mousedown', onDocClick)
-  }, [open])
+  const { open, setOpen, triggerRef, menuRef, coords, toggle } = useAnchoredMenu(208)
 
   const isBanned = user.accountStatus === 'banned'
 
@@ -240,27 +232,33 @@ const ActionsMenu = ({ user, canRemoveRestriction, onAction }: ActionsMenuProps)
   }
 
   return (
-    <div className="relative" ref={ref}>
-      <IconButton Icon={MoreVertical} tooltip="More actions" onClick={() => setOpen((o) => !o)} />
-      {open && (
-        <div className="absolute right-0 top-full mt-1 w-[208px] bg-surface rounded-[12px] border border-line-light shadow-modal z-20 py-1 animate-[fadeIn_0.15s_ease]">
-          {items.map((item) => (
-            <button
-              key={item.key}
-              disabled={item.disabled}
-              onClick={() => {
-                if (item.disabled) return
-                setOpen(false)
-                onAction(item.key)
-              }}
-              className={`w-full flex items-center gap-2 px-3 py-2 text-[13px] font-medium text-left bg-transparent border-none transition-colors ${toneClass(item.tone, item.disabled)}`}
-            >
-              <item.Icon size={15} />
-              {item.label}
-            </button>
-          ))}
-        </div>
-      )}
+    <div className="inline-flex" ref={triggerRef}>
+      <IconButton Icon={MoreVertical} tooltip="More actions" onClick={toggle} />
+      {open &&
+        createPortal(
+          <div
+            ref={menuRef}
+            style={{ position: 'fixed', top: coords.top, left: coords.left, width: 208 }}
+            className="bg-surface rounded-[12px] border border-line-light shadow-modal z-[110] py-1 animate-[fadeIn_0.15s_ease]"
+          >
+            {items.map((item) => (
+              <button
+                key={item.key}
+                disabled={item.disabled}
+                onClick={() => {
+                  if (item.disabled) return
+                  setOpen(false)
+                  onAction(item.key)
+                }}
+                className={`w-full flex items-center gap-2 px-3 py-2 text-[13px] font-medium text-left bg-transparent border-none transition-colors ${toneClass(item.tone, item.disabled)}`}
+              >
+                <item.Icon size={15} />
+                {item.label}
+              </button>
+            ))}
+          </div>,
+          document.body,
+        )}
     </div>
   )
 }

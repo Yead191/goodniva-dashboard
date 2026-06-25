@@ -5,8 +5,10 @@ import {
   CalendarDays,
   Eye,
   Flag,
+  Pencil,
   Plus,
   Search,
+  Trash2,
   TrendingDown,
   TrendingUp,
   UserCheck,
@@ -17,6 +19,7 @@ import PageHeader from '@/components/layout/PageHeader'
 import { Badge, Card, IconButton, PrimaryButton, StatCard } from '@/components/common'
 import CityDetailsDrawer from '@/components/modals/CityDetailsDrawer'
 import CityFormModal from '@/components/modals/CityFormModal'
+import ConfirmDialog from '@/components/modals/ConfirmDialog'
 import { citiesSeed } from '@/data/cityOps'
 import { useToast } from '@/context/ToastContext'
 import { colors } from '@/utils/colors'
@@ -31,6 +34,8 @@ const CityOperationsPage = () => {
   const [query, setQuery] = useState('')
   const [selected, setSelected] = useState<CityOps | null>(null)
   const [showAdd, setShowAdd] = useState(false)
+  const [editing, setEditing] = useState<CityOps | null>(null)
+  const [deleting, setDeleting] = useState<CityOps | null>(null)
   const { showToast } = useToast()
 
   const countries = useMemo(
@@ -63,6 +68,20 @@ const CityOperationsPage = () => {
     setCities((prev) => [{ ...data, id: nextId }, ...prev])
     setShowAdd(false)
     showToast(`${data.name} added to City Operations`, 'success')
+  }
+
+  const handleEditCity = (data: Omit<CityOps, 'id'>) => {
+    if (!editing) return
+    setCities((prev) => prev.map((c) => (c.id === editing.id ? { ...data, id: editing.id } : c)))
+    setEditing(null)
+    showToast(`${data.name} updated`, 'success')
+  }
+
+  const handleDeleteCity = () => {
+    if (!deleting) return
+    setCities((prev) => prev.filter((c) => c.id !== deleting.id))
+    showToast(`${deleting.name} removed from City Operations`, 'success')
+    setDeleting(null)
   }
 
   return (
@@ -139,7 +158,13 @@ const CityOperationsPage = () => {
           </div>
         ) : (
           visible.map((c) => (
-            <CityCard key={c.id} city={c} onView={() => setSelected(c)} />
+            <CityCard
+              key={c.id}
+              city={c}
+              onView={() => setSelected(c)}
+              onEdit={() => setEditing(c)}
+              onDelete={() => setDeleting(c)}
+            />
           ))
         )}
       </div>
@@ -148,11 +173,36 @@ const CityOperationsPage = () => {
       {showAdd && (
         <CityFormModal onCancel={() => setShowAdd(false)} onSubmit={handleAddCity} />
       )}
+      {editing && (
+        <CityFormModal
+          initial={editing}
+          onCancel={() => setEditing(null)}
+          onSubmit={handleEditCity}
+        />
+      )}
+      {deleting && (
+        <ConfirmDialog
+          action="deleteCity"
+          userName={deleting.name}
+          onCancel={() => setDeleting(null)}
+          onConfirm={handleDeleteCity}
+        />
+      )}
     </div>
   )
 }
 
-const CityCard = ({ city, onView }: { city: CityOps; onView: () => void }) => {
+const CityCard = ({
+  city,
+  onView,
+  onEdit,
+  onDelete,
+}: {
+  city: CityOps
+  onView: () => void
+  onEdit: () => void
+  onDelete: () => void
+}) => {
   const status = healthStyle(city.status)
   const noShowDirection = direction(city.trend.map((t) => t.noShows))
   return (
@@ -166,7 +216,11 @@ const CityCard = ({ city, onView }: { city: CityOps; onView: () => void }) => {
             </div>
             <Badge text={`• ${city.status}`} bg={status.bg} color={status.text} />
           </div>
-          <IconButton Icon={Eye} tooltip="City detail" onClick={onView} />
+          <div className="flex items-center gap-1 shrink-0">
+            <IconButton Icon={Eye} tooltip="City detail" onClick={onView} />
+            <IconButton Icon={Pencil} tooltip="Edit city" onClick={onEdit} />
+            <IconButton Icon={Trash2} tooltip="Delete city" onClick={onDelete} danger />
+          </div>
         </div>
 
         <div className="grid grid-cols-3 gap-2 mb-4">
