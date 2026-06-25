@@ -1,12 +1,45 @@
-import { useState } from 'react'
-import { X, Users, UsersRound, Trophy, Target, type LucideIcon } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
+import {
+  X,
+  Users,
+  UsersRound,
+  Trophy,
+  Target,
+  AlertTriangle,
+  Ban,
+  CircleSlash,
+  Lock,
+  MoreVertical,
+  ShieldCheck,
+  ShieldOff,
+  type LucideIcon,
+} from 'lucide-react'
 import { colors } from '@/utils/colors'
-import { Badge, PrimaryButton } from '@/components/common'
-import type { Community } from '@/types'
+import { Badge, IconButton, PrimaryButton } from '@/components/common'
+import { getStatusStyle } from '@/utils/statusStyles'
+import type { Community, CommunityGroup } from '@/types'
+import type { ConfirmAction } from '@/components/modals/ConfirmDialog'
+
+export type GroupAction = Extract<
+  ConfirmAction,
+  | 'warnGroup'
+  | 'restrictGroupJoin'
+  | 'restrictGroupHost'
+  | 'suspendGroup'
+  | 'banGroup'
+  | 'removeGroupRestriction'
+>
 
 type Tab = 'overview' | 'members' | 'group' | 'competitions' | 'scoreboard'
 
-const CommunityDetailsModal = ({ community, onClose }: { community: Community; onClose: () => void }) => {
+interface CommunityDetailsModalProps {
+  community: Community
+  onClose: () => void
+  onGroupAction?: (group: CommunityGroup, action: GroupAction) => void
+}
+
+const CommunityDetailsModal = ({ community, onClose, onGroupAction }: CommunityDetailsModalProps) => {
   const [tab, setTab] = useState<Tab>('overview')
 
   const tabs: { key: Tab; label: string }[] = [
@@ -51,7 +84,7 @@ const CommunityDetailsModal = ({ community, onClose }: { community: Community; o
           <div className="flex-1 overflow-auto py-5 px-7">
             {tab === 'overview' && <OverviewTab community={community} />}
             {tab === 'members' && <MembersTab community={community} />}
-            {tab === 'group' && <GroupTab community={community} />}
+            {tab === 'group' && <GroupTab community={community} onGroupAction={onGroupAction} />}
             {tab === 'competitions' && <CompetitionsTab community={community} />}
             {tab === 'scoreboard' && <ScoreboardTab community={community} />}
           </div>
@@ -104,24 +137,141 @@ const MembersTab = ({ community }: { community: Community }) => (
   </div>
 )
 
-const GroupTab = ({ community }: { community: Community }) => (
+const GroupTab = ({
+  community,
+  onGroupAction,
+}: {
+  community: Community
+  onGroupAction?: (group: CommunityGroup, action: GroupAction) => void
+}) => (
   <div className="grid grid-cols-2 gap-3">
     {community.groupList.length === 0 ? (
       <div className="col-span-2"><EmptyState message="No groups created yet" /></div>
-    ) : community.groupList.map((g) => (
-      <div key={g.id} className="bg-surface-subtle border border-line-light rounded-xl p-[14px]">
-        <div className="flex items-center gap-[10px] mb-2">
-          <img src={g.avatar} alt="" className="w-9 h-9 rounded-[10px]" />
-          <div>
-            <div className="text-sm font-bold text-ink-primary">{g.name}</div>
-            <div className="text-xs text-ink-muted">{g.city}</div>
+    ) : community.groupList.map((g) => {
+      const status = g.status ?? 'Active'
+      const style = getStatusStyle(status)
+      return (
+        <div key={g.id} className="bg-surface-subtle border border-line-light rounded-xl p-[14px]">
+          <div className="flex items-start gap-[10px] mb-2">
+            <img src={g.avatar} alt="" className="w-9 h-9 rounded-[10px]" />
+            <div className="min-w-0 flex-1">
+              <div className="text-sm font-bold text-ink-primary truncate">{g.name}</div>
+              <div className="text-xs text-ink-muted">{g.city}</div>
+            </div>
+            {onGroupAction && <GroupActionsMenu group={g} onAction={(a) => onGroupAction(g, a)} />}
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="text-[13px] text-ink-secondary">{g.members} members</div>
+            {status !== 'Active' && <Badge text={status} bg={style.bg} color={style.text} />}
           </div>
         </div>
-        <div className="text-[13px] text-ink-secondary">{g.members} members</div>
-      </div>
-    ))}
+      )
+    })}
   </div>
 )
+
+interface GroupMenuItem {
+  key: GroupAction
+  label: string
+  Icon: LucideIcon
+  tone: 'warning' | 'danger' | 'success'
+}
+
+const GROUP_MODERATION_ITEMS: GroupMenuItem[] = [
+  { key: 'warnGroup', label: 'Warn Group', Icon: AlertTriangle, tone: 'warning' },
+  { key: 'restrictGroupJoin', label: 'Restrict Joining', Icon: CircleSlash, tone: 'warning' },
+  { key: 'restrictGroupHost', label: 'Restrict Hosting', Icon: ShieldOff, tone: 'warning' },
+  { key: 'suspendGroup', label: 'Suspend Group', Icon: Lock, tone: 'warning' },
+  { key: 'banGroup', label: 'Ban Group', Icon: Ban, tone: 'danger' },
+]
+
+const MENU_WIDTH = 190
+
+const GroupActionsMenu = ({
+  group,
+  onAction,
+}: {
+  group: CommunityGroup
+  onAction: (action: GroupAction) => void
+}) => {
+  const [open, setOpen] = useState(false)
+  const [coords, setCoords] = useState({ top: 0, left: 0 })
+  const triggerRef = useRef<HTMLDivElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  const status = group.status ?? 'Active'
+  const items: GroupMenuItem[] = [
+    ...GROUP_MODERATION_ITEMS,
+    ...(status !== 'Active'
+      ? [{ key: 'removeGroupRestriction' as const, label: 'Reactivate', Icon: ShieldCheck, tone: 'success' as const }]
+      : []),
+  ]
+
+  useEffect(() => {
+    if (!open) return
+    const onDocClick = (e: MouseEvent) => {
+      const node = e.target as Node
+      if (triggerRef.current?.contains(node) || menuRef.current?.contains(node)) return
+      setOpen(false)
+    }
+    // The menu is portaled, so any scroll/resize would detach it — close instead.
+    const onScrollOrResize = () => setOpen(false)
+    document.addEventListener('mousedown', onDocClick)
+    window.addEventListener('scroll', onScrollOrResize, true)
+    window.addEventListener('resize', onScrollOrResize)
+    return () => {
+      document.removeEventListener('mousedown', onDocClick)
+      window.removeEventListener('scroll', onScrollOrResize, true)
+      window.removeEventListener('resize', onScrollOrResize)
+    }
+  }, [open])
+
+  const toggle = () => {
+    if (!open && triggerRef.current) {
+      const r = triggerRef.current.getBoundingClientRect()
+      const estHeight = items.length * 38 + 8
+      const top =
+        r.bottom + estHeight + 8 > window.innerHeight ? r.top - estHeight - 4 : r.bottom + 4
+      setCoords({ top, left: Math.max(8, r.right - MENU_WIDTH) })
+    }
+    setOpen((o) => !o)
+  }
+
+  const toneClass = (tone: GroupMenuItem['tone']) => {
+    if (tone === 'danger') return 'text-danger hover:bg-danger-light'
+    if (tone === 'success') return 'text-success hover:bg-surface-subtle'
+    return 'text-ink-primary hover:bg-surface-subtle'
+  }
+
+  return (
+    <div className="shrink-0" ref={triggerRef}>
+      <IconButton Icon={MoreVertical} tooltip="Group actions" onClick={toggle} />
+      {open &&
+        createPortal(
+          <div
+            ref={menuRef}
+            style={{ position: 'fixed', top: coords.top, left: coords.left, width: MENU_WIDTH }}
+            className="bg-surface rounded-[12px] border border-line-light shadow-modal z-[110] py-1 animate-[fadeIn_0.15s_ease]"
+          >
+            {items.map((item) => (
+              <button
+                key={item.key}
+                onClick={() => {
+                  setOpen(false)
+                  onAction(item.key)
+                }}
+                className={`w-full flex items-center gap-2 px-3 py-2 text-[13px] font-medium text-left bg-transparent border-none cursor-pointer transition-colors ${toneClass(item.tone)}`}
+              >
+                <item.Icon size={15} />
+                {item.label}
+              </button>
+            ))}
+          </div>,
+          document.body,
+        )}
+    </div>
+  )
+}
 
 const CompetitionsTab = ({ community }: { community: Community }) => (
   <div className="flex flex-col gap-3">

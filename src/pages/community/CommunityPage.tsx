@@ -9,22 +9,21 @@ import {
 } from 'lucide-react'
 import PageHeader from '@/components/layout/PageHeader'
 import { Card, Badge, IconButton } from '@/components/common'
-import CommunityDetailsModal from '@/components/modals/CommunityDetailsModal'
+import CommunityDetailsModal, { type GroupAction } from '@/components/modals/CommunityDetailsModal'
 import ConfirmDialog, { ConfirmAction } from '@/components/modals/ConfirmDialog'
 import { communitiesSeed } from '@/data/communities'
 import { useToast } from '@/context/ToastContext'
 import { getStatusStyle } from '@/utils/statusStyles'
-import type { Community } from '@/types'
+import type { Community, CommunityGroup, GroupStatus, ToastTone } from '@/types'
 
 type CommunityAction = Extract<
   ConfirmAction,
   'suspendCommunity' | 'reactivateCommunity' | 'deleteCommunity'
 >
 
-interface ConfirmState {
-  action: CommunityAction
-  community: Community
-}
+type ConfirmState =
+  | { kind: 'community'; action: CommunityAction; community: Community }
+  | { kind: 'group'; action: GroupAction; community: Community; group: CommunityGroup }
 
 const CommunityPage = () => {
   const [communities, setCommunities] = useState<Community[]>(communitiesSeed)
@@ -34,6 +33,11 @@ const CommunityPage = () => {
 
   const handleConfirm = () => {
     if (!confirm) return
+    if (confirm.kind === 'group') {
+      applyGroupAction(confirm.community, confirm.group, confirm.action)
+      setConfirm(null)
+      return
+    }
     const { community, action } = confirm
     if (action === 'deleteCommunity') {
       setCommunities((prev) => prev.filter((c) => c.id !== community.id))
@@ -50,6 +54,18 @@ const CommunityPage = () => {
       showToast(`"${community.name}" has been reactivated`, 'success')
     }
     setConfirm(null)
+  }
+
+  const applyGroupAction = (community: Community, group: CommunityGroup, action: GroupAction) => {
+    const status = groupStatusForAction(action)
+    const updateGroups = (c: Community): Community =>
+      c.id === community.id
+        ? { ...c, groupList: c.groupList.map((g) => (g.id === group.id ? { ...g, status } : g)) }
+        : c
+    setCommunities((prev) => prev.map(updateGroups))
+    setSelected((prev) => (prev ? updateGroups(prev) : prev))
+    const { text, tone } = groupActionToast(group.name, action)
+    showToast(text, tone)
   }
 
   return (
@@ -74,7 +90,7 @@ const CommunityPage = () => {
                   key={c.id}
                   community={c}
                   onView={() => setSelected(c)}
-                  onAction={(action) => setConfirm({ community: c, action })}
+                  onAction={(action) => setConfirm({ kind: 'community', community: c, action })}
                 />
               ))}
             </tbody>
@@ -82,11 +98,19 @@ const CommunityPage = () => {
         </div>
       </Card>
 
-      {selected && <CommunityDetailsModal community={selected} onClose={() => setSelected(null)} />}
+      {selected && (
+        <CommunityDetailsModal
+          community={selected}
+          onClose={() => setSelected(null)}
+          onGroupAction={(group, action) =>
+            setConfirm({ kind: 'group', community: selected, group, action })
+          }
+        />
+      )}
       {confirm && (
         <ConfirmDialog
           action={confirm.action}
-          userName={confirm.community.name}
+          userName={confirm.kind === 'group' ? confirm.group.name : confirm.community.name}
           onCancel={() => setConfirm(null)}
           onConfirm={handleConfirm}
         />
@@ -210,6 +234,43 @@ const CommunityActionsMenu = ({
       )}
     </div>
   )
+}
+
+const groupStatusForAction = (action: GroupAction): GroupStatus => {
+  switch (action) {
+    case 'warnGroup':
+      return 'Warned'
+    case 'restrictGroupJoin':
+      return 'Join Restricted'
+    case 'restrictGroupHost':
+      return 'Host Restricted'
+    case 'suspendGroup':
+      return 'Suspended'
+    case 'banGroup':
+      return 'Banned'
+    case 'removeGroupRestriction':
+      return 'Active'
+  }
+}
+
+const groupActionToast = (
+  name: string,
+  action: GroupAction,
+): { text: string; tone: ToastTone } => {
+  switch (action) {
+    case 'warnGroup':
+      return { text: `Warning sent to "${name}"`, tone: 'warning' }
+    case 'restrictGroupJoin':
+      return { text: `Joining restricted for "${name}"`, tone: 'warning' }
+    case 'restrictGroupHost':
+      return { text: `Hosting restricted for "${name}"`, tone: 'warning' }
+    case 'suspendGroup':
+      return { text: `"${name}" has been suspended`, tone: 'warning' }
+    case 'banGroup':
+      return { text: `"${name}" has been banned`, tone: 'danger' }
+    case 'removeGroupRestriction':
+      return { text: `"${name}" has been reactivated`, tone: 'success' }
+  }
 }
 
 export default CommunityPage

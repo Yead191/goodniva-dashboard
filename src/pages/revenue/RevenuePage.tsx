@@ -43,12 +43,12 @@ const RevenuePage = () => {
 
       <div className="grid grid-cols-4 gap-4 mb-5">
         <StatCard Icon={Wallet} iconBg={colors.primaryLight} iconColor={colors.primary}
-          label="Total Revenue (YTD)" value={`$${totalRevenueYTD.toLocaleString()}`}
+          label="Total Revenue (YTD)" value={`£${totalRevenueYTD.toLocaleString()}`}
           badge={`+${growthPct}%`} badgeTone="success" />
         <StatCard Icon={TrendingUp} iconBg={colors.successLight} iconColor={colors.success}
-          label="This Month" value={`$${currentMonth.toLocaleString()}`} badge="+12.0%" badgeTone="success" />
+          label="This Month" value={`£${currentMonth.toLocaleString()}`} badge="+12.0%" badgeTone="success" />
         <StatCard Icon={CreditCard} iconBg={colors.infoLight} iconColor={colors.info}
-          label="Monthly Recurring" value={`$${totalMRR.toFixed(2)}`} badge="MRR" badgeTone="info" />
+          label="Monthly Recurring" value={`£${totalMRR.toFixed(2)}`} badge="MRR" badgeTone="info" />
         <StatCard Icon={Crown} iconBg="#FEF3C7" iconColor={colors.warning}
           label="Active Subscribers" value={activeSubscribers.length} badge="Paying" badgeTone="warning" />
       </div>
@@ -73,10 +73,10 @@ const RevenuePage = () => {
               </defs>
               <CartesianGrid vertical={false} stroke={colors.borderLight} />
               <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: colors.textMuted, fontSize: 12 }} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fill: colors.textMuted, fontSize: 12 }} tickFormatter={(v) => `$${v / 1000}k`} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fill: colors.textMuted, fontSize: 12 }} tickFormatter={(v) => `£${v / 1000}k`} />
               <Tooltip
                 contentStyle={{ background: colors.bgCard, border: `1px solid ${colors.border}`, borderRadius: 10, fontSize: 13 }}
-                formatter={(v: number) => `$${v.toLocaleString()}`}
+                formatter={(v: number) => `£${v.toLocaleString()}`}
               />
               <Area type="monotone" dataKey="revenue" stroke={colors.primary} strokeWidth={2.5}
                 fill="url(#revenueGrad)" dot={{ r: 4, fill: colors.primary, strokeWidth: 2, stroke: colors.bgCard }}
@@ -173,7 +173,7 @@ const SubscriberRow = ({ sub }: { sub: Subscriber }) => {
         <Badge text={sub.plan} bg={planColor.bg} color={planColor.text} />
       </td>
       <td className="py-[14px] px-4 border-b border-line-light text-sm font-bold text-ink-primary tabular-nums">
-        ${sub.amount.toFixed(2)}
+        £{sub.amount.toFixed(2)}
       </td>
       <td className="py-[14px] px-4 border-b border-line-light">
         <span className="inline-flex items-center gap-[6px] text-[13px] text-ink-secondary">

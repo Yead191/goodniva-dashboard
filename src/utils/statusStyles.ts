@@ -31,6 +31,13 @@ export const getStatusStyle = (
     Sent: { bg: colors.successLight, text: colors.successText, dot: colors.success },
     Scheduled: { bg: colors.infoLight, text: colors.infoText, dot: colors.info },
     Failed: { bg: colors.dangerLight, text: colors.dangerText, dot: colors.danger },
+
+    // Community groups
+    Warned: { bg: colors.warningLight, text: colors.warningText, dot: colors.warning },
+    'Join Restricted': { bg: colors.warningLight, text: colors.warningText, dot: colors.warning },
+    'Host Restricted': { bg: colors.warningLight, text: colors.warningText, dot: colors.warning },
+    Suspended: { bg: colors.warningLight, text: colors.warningText, dot: colors.warning },
+    Banned: { bg: colors.dangerLight, text: colors.dangerText, dot: colors.danger },
   }
   return map[status] || { bg: colors.bgInput, text: colors.textSecondary, dot: colors.textMuted }
 }

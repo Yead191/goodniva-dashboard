@@ -180,12 +180,22 @@ export interface CommunityMember {
   joined: string
 }
 
+export type GroupStatus =
+  | 'Active'
+  | 'Warned'
+  | 'Join Restricted'
+  | 'Host Restricted'
+  | 'Suspended'
+  | 'Banned'
+
 export interface CommunityGroup {
   id: number
   name: string
   members: number
   city: string
   avatar: string
+  /** Moderation state of the group. Treated as 'Active' when omitted. */
+  status?: GroupStatus
 }
 
 export interface Competition {
@@ -216,6 +226,8 @@ export interface Subscription {
   duration: string
   features: string[]
   status: 'Active' | 'Cancelled' | 'Expired' | 'Hidden'
+  /** Length of the free trial in days. 0 or undefined means no trial. */
+  trialDays?: number
 }
 
 // Interest types

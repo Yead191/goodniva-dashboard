@@ -96,7 +96,14 @@ interface SubRowProps {
 
 const SubRow = ({ sub, onView, onEdit, onHide }: SubRowProps) => (
   <tr className="hover:bg-surface-subtle transition-colors duration-150">
-    <td className="py-[18px] px-4 border-b border-line-light text-sm font-semibold text-ink-primary">{sub.planName}</td>
+    <td className="py-[18px] px-4 border-b border-line-light">
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className="text-sm font-semibold text-ink-primary">{sub.planName}</span>
+        {sub.trialDays ? (
+          <Badge text={`${sub.trialDays}-day free trial`} bg={colors.successLight} color={colors.successText} />
+        ) : null}
+      </div>
+    </td>
     <td className="py-[18px] px-4 border-b border-line-light text-sm font-semibold text-ink-primary tabular-nums">{sub.price}</td>
     <td className="py-[18px] px-4 border-b border-line-light text-sm text-ink-primary">{sub.duration}</td>
     <td className="py-[18px] px-4 border-b border-line-light">

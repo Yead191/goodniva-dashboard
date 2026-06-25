@@ -27,6 +27,12 @@ const SubscriptionDetailsModal = ({ sub, onClose }: SubscriptionDetailsModalProp
             <ReadonlyField label="Duration"><ReadonlyValue iconRight>{sub.duration}</ReadonlyValue></ReadonlyField>
           </div>
 
+          <ReadonlyField label="Free Trial">
+            <ReadonlyValue>
+              {sub.trialDays ? `${sub.trialDays}-day free trial` : 'No free trial'}
+            </ReadonlyValue>
+          </ReadonlyField>
+
           <div className="mb-4">
             <label className="block text-[13px] font-bold text-ink-primary mb-[10px]">Features & Limits</label>
             <div className="flex flex-col gap-[10px]">

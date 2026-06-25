@@ -19,6 +19,12 @@ export type ConfirmAction =
   | 'suspendCommunity'
   | 'reactivateCommunity'
   | 'deleteCommunity'
+  | 'warnGroup'
+  | 'restrictGroupJoin'
+  | 'restrictGroupHost'
+  | 'suspendGroup'
+  | 'banGroup'
+  | 'removeGroupRestriction'
   | 'reverseAction'
   | 'deleteAdmin'
   | 'suspendAdmin'
@@ -133,6 +139,42 @@ const ConfirmDialog = ({ action, userName, onCancel, onConfirm }: ConfirmDialogP
       title: 'Delete Community?',
       message: <>Permanently delete <strong>{userName}</strong>? All groups, scoreboards, and competition history will be removed. This cannot be undone.</>,
       confirmLabel: 'Yes, Delete', confirmColor: colors.danger, confirmHover: '#DC2626',
+    },
+    warnGroup: {
+      Icon: AlertTriangle, iconBg: colors.warningLight, iconColor: colors.warning,
+      title: 'Warn Group?',
+      message: <>Issue a formal warning to <strong>{userName}</strong>? Group admins will be notified of the policy concern.</>,
+      confirmLabel: 'Yes, Send Warning', confirmColor: colors.warning, confirmHover: '#D97706',
+    },
+    restrictGroupJoin: {
+      Icon: CircleSlash, iconBg: colors.warningLight, iconColor: colors.warning,
+      title: 'Restrict Joining?',
+      message: <>Prevent new users from joining <strong>{userName}</strong>? Existing members keep access, but no one new can join.</>,
+      confirmLabel: 'Yes, Restrict Joining', confirmColor: colors.warning, confirmHover: '#D97706',
+    },
+    restrictGroupHost: {
+      Icon: ShieldOff, iconBg: colors.warningLight, iconColor: colors.warning,
+      title: 'Restrict Hosting?',
+      message: <>Prevent <strong>{userName}</strong> from hosting new plans or competitions? Members can still join others' plans.</>,
+      confirmLabel: 'Yes, Restrict Hosting', confirmColor: colors.warning, confirmHover: '#D97706',
+    },
+    suspendGroup: {
+      Icon: Lock, iconBg: colors.warningLight, iconColor: colors.warning,
+      title: 'Suspend Group?',
+      message: <>Suspend <strong>{userName}</strong>? All activity is paused and members lose access until the group is reactivated.</>,
+      confirmLabel: 'Yes, Suspend', confirmColor: colors.warning, confirmHover: '#D97706',
+    },
+    banGroup: {
+      Icon: Ban, iconBg: colors.dangerLight, iconColor: colors.danger,
+      title: 'Ban Group?',
+      message: <>Ban <strong>{userName}</strong> from the platform? This is a permanent action and the group will lose all access.</>,
+      confirmLabel: 'Yes, Ban Group', confirmColor: colors.danger, confirmHover: '#DC2626',
+    },
+    removeGroupRestriction: {
+      Icon: ShieldCheck, iconBg: colors.successLight, iconColor: colors.success,
+      title: 'Reactivate Group?',
+      message: <>Lift all restrictions on <strong>{userName}</strong> and restore it to good standing?</>,
+      confirmLabel: 'Yes, Reactivate', confirmColor: colors.success, confirmHover: '#059669',
     },
     reverseAction: {
       Icon: RotateCcw, iconBg: colors.successLight, iconColor: colors.success,

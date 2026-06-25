@@ -5,6 +5,7 @@ import {
   CalendarDays,
   Eye,
   Flag,
+  Plus,
   Search,
   TrendingDown,
   TrendingUp,
@@ -13,50 +14,63 @@ import {
 } from 'lucide-react'
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis } from 'recharts'
 import PageHeader from '@/components/layout/PageHeader'
-import { Badge, Card, IconButton, StatCard } from '@/components/common'
+import { Badge, Card, IconButton, PrimaryButton, StatCard } from '@/components/common'
 import CityDetailsDrawer from '@/components/modals/CityDetailsDrawer'
+import CityFormModal from '@/components/modals/CityFormModal'
 import { citiesSeed } from '@/data/cityOps'
+import { useToast } from '@/context/ToastContext'
 import { colors } from '@/utils/colors'
 import type { CityHealth, CityOps } from '@/types'
 
 const STATUS_FILTERS: ('All' | CityHealth)[] = ['All', 'Healthy', 'Watch', 'At Risk']
 
 const CityOperationsPage = () => {
+  const [cities, setCities] = useState<CityOps[]>(citiesSeed)
   const [filter, setFilter] = useState<(typeof STATUS_FILTERS)[number]>('All')
   const [country, setCountry] = useState<string>('All')
   const [query, setQuery] = useState('')
   const [selected, setSelected] = useState<CityOps | null>(null)
+  const [showAdd, setShowAdd] = useState(false)
+  const { showToast } = useToast()
 
   const countries = useMemo(
-    () => ['All', ...Array.from(new Set(citiesSeed.map((c) => c.country))).sort()],
-    [],
+    () => ['All', ...Array.from(new Set(cities.map((c) => c.country))).sort()],
+    [cities],
   )
 
   const visible = useMemo(() => {
-    return citiesSeed.filter((c) => {
+    return cities.filter((c) => {
       if (filter !== 'All' && c.status !== filter) return false
       if (country !== 'All' && c.country !== country) return false
       if (query && !c.name.toLowerCase().includes(query.toLowerCase())) return false
       return true
     })
-  }, [filter, country, query])
+  }, [cities, filter, country, query])
 
   const counts = useMemo(
     () => ({
-      healthy: citiesSeed.filter((c) => c.status === 'Healthy').length,
-      watch: citiesSeed.filter((c) => c.status === 'Watch').length,
-      atRisk: citiesSeed.filter((c) => c.status === 'At Risk').length,
-      plansToday: citiesSeed.reduce((s, c) => s + c.plansToday, 0),
-      flagged: citiesSeed.reduce((s, c) => s + c.flaggedPlans, 0),
+      healthy: cities.filter((c) => c.status === 'Healthy').length,
+      watch: cities.filter((c) => c.status === 'Watch').length,
+      atRisk: cities.filter((c) => c.status === 'At Risk').length,
+      plansToday: cities.reduce((s, c) => s + c.plansToday, 0),
+      flagged: cities.reduce((s, c) => s + c.flaggedPlans, 0),
     }),
-    [],
+    [cities],
   )
+
+  const handleAddCity = (data: Omit<CityOps, 'id'>) => {
+    const nextId = cities.reduce((max, c) => Math.max(max, c.id), 0) + 1
+    setCities((prev) => [{ ...data, id: nextId }, ...prev])
+    setShowAdd(false)
+    showToast(`${data.name} added to City Operations`, 'success')
+  }
 
   return (
     <div className="py-7 px-8">
       <PageHeader
         title="City Operations"
         subtitle="Monitor each city's health, hosting activity, and risk signals"
+        action={<PrimaryButton Icon={Plus} label="Add City" onClick={() => setShowAdd(true)} />}
       />
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
@@ -131,6 +145,9 @@ const CityOperationsPage = () => {
       </div>
 
       {selected && <CityDetailsDrawer city={selected} onClose={() => setSelected(null)} />}
+      {showAdd && (
+        <CityFormModal onCancel={() => setShowAdd(false)} onSubmit={handleAddCity} />
+      )}
     </div>
   )
 }

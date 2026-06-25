@@ -10,7 +10,8 @@ import {
 } from 'lucide-react'
 import PageHeader from '@/components/layout/PageHeader'
 import { Card, Badge, IconButton, StatCard } from '@/components/common'
-import ConfirmDialog from '@/components/modals/ConfirmDialog'
+import ConfirmDialog, { type ConfirmAction } from '@/components/modals/ConfirmDialog'
+import { ModerationMenu } from '@/pages/safety/SafetyTriagePage'
 import { actionCentreSeed } from '@/data/actionCentre'
 import { useToast } from '@/context/ToastContext'
 import { colors } from '@/utils/colors'
@@ -19,6 +20,15 @@ import type {
   ActionCentreEntry,
   ActionCentreType,
 } from '@/types'
+
+type ModerationAction = Extract<
+  ConfirmAction,
+  'restrictJoin' | 'restrictHost' | 'suspend' | 'ban' | 'removeRestriction'
+>
+
+type PendingAction =
+  | { kind: 'reverse'; entry: ActionCentreEntry }
+  | { kind: 'moderate'; entry: ActionCentreEntry; action: ModerationAction }
 
 const CATEGORIES: (ActionCentreCategory | 'All')[] = [
   'All',
@@ -32,7 +42,7 @@ const CATEGORIES: (ActionCentreCategory | 'All')[] = [
 const ActionCentrePage = () => {
   const [entries, setEntries] = useState<ActionCentreEntry[]>(actionCentreSeed)
   const [filter, setFilter] = useState<(typeof CATEGORIES)[number]>('All')
-  const [confirm, setConfirm] = useState<ActionCentreEntry | null>(null)
+  const [confirm, setConfirm] = useState<PendingAction | null>(null)
   const { showToast } = useToast()
 
   const counts = useMemo(() => buildCounts(entries), [entries])
@@ -41,9 +51,14 @@ const ActionCentrePage = () => {
     [entries, filter],
   )
 
-  const handleReverse = () => {
+  const handleConfirm = () => {
     if (!confirm) return
-    const target = confirm
+    if (confirm.kind === 'reverse') handleReverse(confirm.entry)
+    else handleModerate(confirm.entry, confirm.action)
+    setConfirm(null)
+  }
+
+  const handleReverse = (target: ActionCentreEntry) => {
     const now = nowLabel()
     setEntries((prev) => {
       const updated = prev.map((e) =>
@@ -73,7 +88,58 @@ const ActionCentrePage = () => {
       return [reversalEntry, ...updated]
     })
     showToast(`Action against ${target.target.name} reversed`, 'success')
-    setConfirm(null)
+  }
+
+  const handleModerate = (origin: ActionCentreEntry, action: ModerationAction) => {
+    const now = nowLabel()
+    const { target } = origin
+
+    if (action === 'removeRestriction') {
+      setEntries((prev) => {
+        const updated = prev.map((e) =>
+          e.target.id === target.id &&
+          e.status === 'Active' &&
+          (e.type === 'restrictJoin' || e.type === 'restrictHost' || e.type === 'suspend')
+            ? {
+                ...e,
+                status: 'Reversed' as const,
+                reversedBy: 'Mod: You',
+                reversedAt: now,
+                reversalReason: 'Restrictions lifted via Action Centre',
+              }
+            : e,
+        )
+        const reversalEntry: ActionCentreEntry = {
+          id: Date.now(),
+          type: 'reversal',
+          target,
+          reason: `Restrictions removed for ${target.name}`,
+          source: `Action #${origin.id}`,
+          appliedBy: 'Mod: You',
+          appliedAt: now,
+          status: 'Active',
+          reversedBy: 'Mod: You',
+          reversedAt: now,
+          reversalOf: origin.id,
+        }
+        return [reversalEntry, ...updated]
+      })
+      showToast(`Restrictions removed for ${target.name}`, 'success')
+      return
+    }
+
+    const newEntry: ActionCentreEntry = {
+      id: Date.now(),
+      type: action,
+      target,
+      reason: moderationReason(action),
+      source: `Action Centre · re #${origin.id}`,
+      appliedBy: 'Mod: You',
+      appliedAt: now,
+      status: 'Active',
+    }
+    setEntries((prev) => [newEntry, ...prev])
+    showToast(actionToast(target.name, action), actionTone(action))
   }
 
   return (
@@ -158,7 +224,8 @@ const ActionCentrePage = () => {
                   <ActionRow
                     key={e.id}
                     entry={e}
-                    onReverse={() => setConfirm(e)}
+                    onReverse={() => setConfirm({ kind: 'reverse', entry: e })}
+                    onModerate={(action) => setConfirm({ kind: 'moderate', entry: e, action })}
                   />
                 ))
               )}
@@ -169,10 +236,10 @@ const ActionCentrePage = () => {
 
       {confirm && (
         <ConfirmDialog
-          action="reverseAction"
-          userName={confirm.target.name}
+          action={confirm.kind === 'reverse' ? 'reverseAction' : confirm.action}
+          userName={confirm.entry.target.name}
           onCancel={() => setConfirm(null)}
-          onConfirm={handleReverse}
+          onConfirm={handleConfirm}
         />
       )}
     </div>
@@ -182,12 +249,14 @@ const ActionCentrePage = () => {
 interface ActionRowProps {
   entry: ActionCentreEntry
   onReverse: () => void
+  onModerate: (action: ModerationAction) => void
 }
 
-const ActionRow = ({ entry, onReverse }: ActionRowProps) => {
+const ActionRow = ({ entry, onReverse, onModerate }: ActionRowProps) => {
   const meta = actionMeta(entry.type)
   const status = statusStyle(entry.status)
   const reversible = entry.status === 'Active' && entry.type !== 'reversal'
+  const moderable = entry.type !== 'reversal'
 
   return (
     <tr className="hover:bg-surface-subtle transition-colors duration-150">
@@ -224,8 +293,13 @@ const ActionRow = ({ entry, onReverse }: ActionRowProps) => {
         <Badge text={entry.status} bg={status.bg} color={status.color} />
       </td>
       <td className="py-[14px] px-4 border-b border-line-light">
-        {reversible ? (
-          <IconButton Icon={RotateCcw} tooltip="Reverse action" onClick={onReverse} />
+        {reversible || moderable ? (
+          <div className="flex gap-1 items-center">
+            {reversible && (
+              <IconButton Icon={RotateCcw} tooltip="Reverse action" onClick={onReverse} />
+            )}
+            {moderable && <ModerationMenu onAction={onModerate} />}
+          </div>
         ) : (
           <span className="text-[12px] text-ink-muted">—</span>
         )}
@@ -297,6 +371,42 @@ const describeAction = (type: ActionCentreType): string => {
     case 'reversal':
       return 'Reversal'
   }
+}
+
+const moderationReason = (action: ModerationAction): string => {
+  switch (action) {
+    case 'restrictJoin':
+      return 'Joining restricted via Action Centre'
+    case 'restrictHost':
+      return 'Hosting restricted via Action Centre'
+    case 'suspend':
+      return 'Account suspended via Action Centre'
+    case 'ban':
+      return 'Banned via Action Centre'
+    case 'removeRestriction':
+      return 'Restrictions removed via Action Centre'
+  }
+}
+
+const actionToast = (name: string, action: ModerationAction): string => {
+  switch (action) {
+    case 'restrictJoin':
+      return `${name} restricted from joining plans`
+    case 'restrictHost':
+      return `${name} restricted from hosting plans`
+    case 'suspend':
+      return `${name}'s account suspended`
+    case 'ban':
+      return `${name} has been banned`
+    case 'removeRestriction':
+      return `Restrictions removed for ${name}`
+  }
+}
+
+const actionTone = (action: ModerationAction): 'success' | 'warning' | 'danger' => {
+  if (action === 'ban') return 'danger'
+  if (action === 'removeRestriction') return 'success'
+  return 'warning'
 }
 
 const byNewest = (a: ActionCentreEntry, b: ActionCentreEntry) =>

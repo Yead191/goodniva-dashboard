@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { X, Plus, CheckCircle2, Trash2, Calendar, CircleDashed } from 'lucide-react'
+import { X, Plus, CheckCircle2, Trash2, Calendar, CircleDashed, Sparkles } from 'lucide-react'
 import { colors } from '@/utils/colors'
 import { PillInput, FieldWithLabel, PrimaryButton, DangerButton } from '@/components/common'
 import type { Subscription } from '@/types'
@@ -12,11 +12,14 @@ interface SubscriptionFormModalProps {
 }
 
 const SubscriptionFormModal = ({ mode, initialData, onCancel, onSubmit }: SubscriptionFormModalProps) => {
-  const [planName, setPlanName] = useState(initialData?.planName ?? 'Premium')
-  const [price, setPrice] = useState(initialData?.price ?? '$30.00')
-  const [duration, setDuration] = useState(initialData?.duration ?? '30 days')
+  const [planName, setPlanName] = useState(initialData?.planName ?? 'GoodNiva Plus')
+  const [price, setPrice] = useState(initialData?.price ?? '£9.99')
+  const [duration, setDuration] = useState(initialData?.duration ?? 'Monthly')
+  const [trial, setTrial] = useState(
+    initialData?.trialDays ? String(initialData.trialDays) : '',
+  )
   const [features, setFeatures] = useState<string[]>(
-    initialData?.features ?? ['Up to 25 active users', 'Advanced analytics dashboard'],
+    initialData?.features ?? ['Unlimited plan joining & hosting', 'Priority placement in discovery'],
   )
   const [newFeature, setNewFeature] = useState('')
 
@@ -35,7 +38,8 @@ const SubscriptionFormModal = ({ mode, initialData, onCancel, onSubmit }: Subscr
 
   const handleSubmit = () => {
     if (!planName.trim()) return
-    onSubmit({ planName, price, duration, features })
+    const trialDays = Math.max(0, parseInt(trial, 10) || 0)
+    onSubmit({ planName, price, duration, features, trialDays: trialDays || undefined })
   }
 
   return (
@@ -59,12 +63,21 @@ const SubscriptionFormModal = ({ mode, initialData, onCancel, onSubmit }: Subscr
 
             <div className="grid grid-cols-2 gap-[14px] mb-5">
               <FieldWithLabel label="Price">
-                <PillInput value={price} onChange={setPrice} placeholder="$0.00" />
+                <PillInput value={price} onChange={setPrice} placeholder="£0.00" />
               </FieldWithLabel>
               <FieldWithLabel label="Duration">
-                <PillInput value={duration} onChange={setDuration} placeholder="30 days" iconRight={Calendar} />
+                <PillInput value={duration} onChange={setDuration} placeholder="Monthly" iconRight={Calendar} />
               </FieldWithLabel>
             </div>
+
+            <FieldWithLabel label="Free Trial (days)">
+              <PillInput
+                value={trial}
+                onChange={(v) => setTrial(v.replace(/[^0-9]/g, ''))}
+                placeholder="e.g. 7 — leave empty for no trial"
+                iconRight={Sparkles}
+              />
+            </FieldWithLabel>
 
             <div className="mb-4">
               <div className="flex justify-between items-center mb-[10px]">
