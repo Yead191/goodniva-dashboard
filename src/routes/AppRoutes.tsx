@@ -14,7 +14,7 @@ import UsersPage from '@/pages/users/UsersPage'
 import PlansPage from '@/pages/plans/PlansPage'
 import CommunityPage from '@/pages/community/CommunityPage'
 import InterestPage from '@/pages/interest/InterestPage'
-import SubscriptionsPage from '@/pages/subscriptions/SubscriptionsPage'
+import MonetisationPage from '@/pages/monetisation/MonetisationPage'
 import RevenuePage from '@/pages/revenue/RevenuePage'
 import SafetyTriagePage from '@/pages/safety/SafetyTriagePage'
 import ActionCentrePage from '@/pages/actionCentre/ActionCentrePage'
@@ -47,7 +47,14 @@ const AppRoutes = () => {
         <Route path="/plans" element={<PlansPage />} />
         <Route path="/community" element={<CommunityPage />} />
         <Route path="/interest" element={<InterestPage />} />
-        <Route path="/subscriptions" element={<SubscriptionsPage />} />
+        <Route
+          path="/monetisation"
+          element={
+            <ProtectedRoute requiredModule="monetisation">
+              <MonetisationPage />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/revenue" element={<RevenuePage />} />
         <Route path="/safety" element={<SafetyTriagePage />} />
         <Route path="/action-centre" element={<ActionCentrePage />} />
@@ -67,6 +74,7 @@ const AppRoutes = () => {
       </Route>
 
       {/* Defaults */}
+      <Route path="/subscriptions" element={<Navigate to="/monetisation" replace />} />
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>

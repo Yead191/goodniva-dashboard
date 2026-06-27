@@ -38,7 +38,7 @@ export const adminsSeed: Admin[] = [
     email: 'aisha.patel@goodniva.com',
     avatar: 'https://i.pravatar.cc/80?img=32',
     role: 'admin',
-    permissions: ['dashboard', 'revenue', 'subscriptions'],
+    permissions: ['dashboard', 'revenue', 'monetisation'],
     status: 'Suspended',
     createdAt: '2025-02-14',
   },
