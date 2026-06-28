@@ -36,6 +36,16 @@ export const defaultPricingConfig: PricingConfig = {
   annualAmount: 99.99,
   trialEnabled: true,
   trialLengthDays: 7,
+  // Free trial gets a taste of Plus, not the full thing — its own limits.
+  trialLimits: {
+    weeklyPlanJoins: 10,
+    monthlyPlansHosted: 2,
+    priorityPlacement: false,
+    advancedFilters: true,
+    seeWhoViewed: false,
+    adFree: true,
+    prioritySupport: false,
+  },
   displayText: 'GoodNiva Plus — unlock unlimited plans, priority placement & an ad-free experience.',
   savingsNudgeThreshold: 20,
 }
@@ -73,6 +83,15 @@ export const defaultAdsConfig: AdsConfig = {
   admobFallbackEnabled: true,
   mediationEnabled: false,
   firstSessionSuppression: true,
+  // Native ads only on Feed/Vibe — plan details deliberately OFF by default.
+  placements: [
+    { key: 'feed', label: 'Feed', description: 'Native ad cards within the main feed.', enabled: true },
+    { key: 'vibe', label: 'Vibe', description: 'Native ad cards within the Vibe surface.', enabled: true },
+    { key: 'planDetails', label: 'Plan details', description: 'Native ads on individual plan detail pages.', enabled: false },
+  ],
+  feedFirstAdPosition: 4,
+  feedRepeatFrequency: 8,
+  feedMaxAdsPerSession: 6,
   adUnits: [
     { id: 1, platform: 'iOS', placement: 'Feed', adUnitId: 'ca-app-pub-3940256099942544/2934735716' },
     { id: 2, platform: 'iOS', placement: 'Plan Details', adUnitId: 'ca-app-pub-3940256099942544/3986624511' },
@@ -91,28 +110,78 @@ export const defaultRewardedAdsConfig: RewardedAdsConfig = {
 
 // ── Sponsors ───────────────────────────────────────────────────────────
 export const sponsorsSeed: Sponsor[] = [
-  { id: 1, name: 'BrewHaus Coffee', logo: av(31), contact: 'partners@brewhaus.com', category: 'Food & Drink', status: 'Approved', joinedDate: '02 Feb 2026' },
-  { id: 2, name: 'PeakFit Gyms', logo: av(32), contact: 'marketing@peakfit.com', category: 'Fitness', status: 'Approved', joinedDate: '14 Mar 2026' },
-  { id: 3, name: 'UrbanThreads', logo: av(33), contact: 'hello@urbanthreads.co', category: 'Retail', status: 'Pending', joinedDate: '20 Jun 2026' },
-  { id: 4, name: 'NightOwl Lounge', logo: av(34), contact: 'events@nightowl.com', category: 'Nightlife', status: 'Paused', joinedDate: '08 Apr 2026' },
-  { id: 5, name: 'GreenLeaf Wellness', logo: av(35), contact: 'team@greenleaf.com', category: 'Wellness', status: 'Pending', joinedDate: '25 Jun 2026' },
+  {
+    id: 1, name: 'BrewHaus Coffee', category: 'Food & Drink',
+    description: 'Independent speciality coffee roaster and meetup space.',
+    contactPerson: 'Anna Doyle', contact: 'partners@brewhaus.com', contactPhone: '+44 20 7946 0011',
+    website: 'https://brewhaus.com', socialLink: 'https://instagram.com/brewhaus',
+    address: '12 Bridge Street', city: 'London', postcode: 'EC1A 1BB', country: 'United Kingdom',
+    latitude: '51.5155', longitude: '-0.0922', coveringRadius: '5km',
+    logo: av(31), appDisplayImage: av(31), appImageApproved: true, profileImage: '',
+    status: 'Active', safetyStatus: 'Approved', adminNotes: '', packageId: 2,
+    packageStartDate: '2026-06-01', packageEndDate: '2026-08-31', packagePaymentStatus: 'Paid', joinedDate: '02 Feb 2026',
+  },
+  {
+    id: 2, name: 'PeakFit Gyms', category: 'Fitness',
+    description: 'City-wide gym chain running community fitness events.',
+    contactPerson: 'Marcus Reid', contact: 'marketing@peakfit.com', contactPhone: '+44 161 496 0022',
+    website: 'https://peakfit.com', socialLink: 'https://instagram.com/peakfit',
+    address: '4 Albert Square', city: 'Manchester', postcode: 'M2 5PB', country: 'United Kingdom',
+    latitude: '53.4794', longitude: '-2.2453', coveringRadius: 'City-wide',
+    logo: av(32), appDisplayImage: '', appImageApproved: false, profileImage: '',
+    status: 'Approved', safetyStatus: 'Approved', adminNotes: '', packageId: 3,
+    packageStartDate: '2026-07-01', packageEndDate: '2026-09-30', packagePaymentStatus: 'Unpaid', joinedDate: '14 Mar 2026',
+  },
+  {
+    id: 3, name: 'UrbanThreads', category: 'Retail',
+    description: 'Streetwear brand hosting pop-up shopping experiences.',
+    contactPerson: 'Priya Sharma', contact: 'hello@urbanthreads.co', contactPhone: '+44 20 7946 0033',
+    website: 'https://urbanthreads.co', socialLink: 'https://instagram.com/urbanthreads',
+    address: '88 Brick Lane', city: 'London', postcode: 'E1 6RL', country: 'United Kingdom',
+    latitude: '51.5210', longitude: '-0.0719', coveringRadius: '1km',
+    logo: av(33), appDisplayImage: '', appImageApproved: false, profileImage: '',
+    status: 'Pending Review', safetyStatus: 'Pending', adminNotes: '',
+    packageStartDate: '', packageEndDate: '', packagePaymentStatus: 'Unpaid', joinedDate: '20 Jun 2026',
+  },
+  {
+    id: 4, name: 'NightOwl Lounge', category: 'Nightlife',
+    description: 'Late-night music venue and cocktail lounge.',
+    contactPerson: 'Tom Walker', contact: 'events@nightowl.com', contactPhone: '+44 117 496 0044',
+    website: 'https://nightowl.com', socialLink: 'https://instagram.com/nightowl',
+    address: '21 Harbourside', city: 'Bristol', postcode: 'BS1 5UH', country: 'United Kingdom',
+    latitude: '51.4480', longitude: '-2.5973', coveringRadius: '10km',
+    logo: av(34), appDisplayImage: av(34), appImageApproved: true, profileImage: '',
+    status: 'Paused', safetyStatus: 'Approved', adminNotes: 'Paused pending licence renewal.', packageId: 1,
+    packageStartDate: '2026-05-01', packageEndDate: '2026-07-31', packagePaymentStatus: 'Manually Approved', joinedDate: '08 Apr 2026',
+  },
+  {
+    id: 5, name: 'GreenLeaf Wellness', category: 'Wellness',
+    description: 'Wellness studio offering yoga and mindfulness sessions.',
+    contactPerson: 'Sofia Alvarez', contact: 'team@greenleaf.com', contactPhone: '+44 113 496 0055',
+    website: 'https://greenleaf.com', socialLink: 'https://instagram.com/greenleaf',
+    address: '7 Park Row', city: 'Leeds', postcode: 'LS1 5HD', country: 'United Kingdom',
+    latitude: '53.7997', longitude: '-1.5492', coveringRadius: '25km',
+    logo: av(35), appDisplayImage: '', appImageApproved: false, profileImage: '',
+    status: 'Draft', safetyStatus: 'Pending', adminNotes: '',
+    packageStartDate: '', packageEndDate: '', packagePaymentStatus: 'Unpaid', joinedDate: '25 Jun 2026',
+  },
 ]
 
 // ── Sponsorship packages ───────────────────────────────────────────────
 export const packagesSeed: SponsorshipPackage[] = [
-  { id: 1, name: 'Starter Spotlight', price: 250, placements: ['Feed'], priority: 1, reportingLevel: 'Basic', active: true },
-  { id: 2, name: 'City Partner', price: 750, placements: ['Feed', 'Vibe'], priority: 2, reportingLevel: 'Standard', active: true },
-  { id: 3, name: 'Premier Partner', price: 2000, placements: ['Feed', 'Vibe', 'Partner Venue'], priority: 3, reportingLevel: 'Premium', active: true },
-  { id: 4, name: 'Event Takeover', price: 3500, placements: ['Feed', 'Vibe', 'Partner Venue'], priority: 4, reportingLevel: 'Premium', active: false },
+  { id: 1, name: 'Starter Spotlight', price: 250, currency: 'GBP', billingPeriod: 'Monthly', placements: ['Feed'], priority: 1, reportingLevel: 'Basic', active: true },
+  { id: 2, name: 'City Partner', price: 750, currency: 'GBP', billingPeriod: 'Monthly', placements: ['Feed', 'Vibe'], priority: 2, reportingLevel: 'Standard', active: true },
+  { id: 3, name: 'Premier Partner', price: 2000, currency: 'GBP', billingPeriod: 'Quarterly', placements: ['Feed', 'Vibe', 'Partner Venue'], priority: 3, reportingLevel: 'Premium', active: true },
+  { id: 4, name: 'Event Takeover', price: 3500, currency: 'GBP', billingPeriod: 'One-off', placements: ['Feed', 'Vibe', 'Partner Venue'], priority: 4, reportingLevel: 'Premium', active: false },
 ]
 
 // ── Campaigns ──────────────────────────────────────────────────────────
 export const campaignsSeed: Campaign[] = [
-  { id: 1, name: 'BrewHaus Summer Meetups', sponsor: 'BrewHaus Coffee', placement: 'Feed', targeting: 'London · Coffee Culture', dailyCap: 5000, startDate: '01 Jun 2026', endDate: '31 Aug 2026', status: 'Live' },
-  { id: 2, name: 'PeakFit Morning Runs', sponsor: 'PeakFit Gyms', placement: 'Vibe', targeting: 'Manchester · Fitness', dailyCap: 3000, startDate: '15 Jun 2026', endDate: '15 Sep 2026', status: 'Live' },
-  { id: 3, name: 'UrbanThreads Pop-up', sponsor: 'UrbanThreads', placement: 'Partner Venue', targeting: 'London · Fashion', dailyCap: 2000, startDate: '01 Jul 2026', endDate: '14 Jul 2026', status: 'Scheduled' },
-  { id: 4, name: 'NightOwl Live Sessions', sponsor: 'NightOwl Lounge', placement: 'Feed', targeting: 'Bristol · Nightlife', dailyCap: 1500, startDate: '20 May 2026', endDate: '20 Jun 2026', status: 'Ended' },
-  { id: 5, name: 'GreenLeaf Wellness Week', sponsor: 'GreenLeaf Wellness', placement: 'Vibe', targeting: 'Leeds · Wellness', dailyCap: 2500, startDate: '01 Jul 2026', endDate: '07 Jul 2026', status: 'Pending Approval' },
+  { id: 1, name: 'BrewHaus Summer Meetups', sponsor: 'BrewHaus Coffee', package: 'City Partner', placement: 'Feed', targeting: 'London · Coffee Culture', dailyCap: 5000, startDate: '01 Jun 2026', endDate: '31 Aug 2026', status: 'Live', metrics: { impressions: 48200, clicks: 3860, venueSelections: 520, plansCreated: 184, usersJoined: 962, offerClaims: 241 } },
+  { id: 2, name: 'PeakFit Morning Runs', sponsor: 'PeakFit Gyms', package: 'Premier Partner', placement: 'Vibe', targeting: 'Manchester · Fitness', dailyCap: 3000, startDate: '15 Jun 2026', endDate: '15 Sep 2026', status: 'Live', metrics: { impressions: 31400, clicks: 2120, venueSelections: 318, plansCreated: 121, usersJoined: 640, offerClaims: 158 } },
+  { id: 3, name: 'UrbanThreads Pop-up', sponsor: 'UrbanThreads', package: 'Starter Spotlight', placement: 'Partner Venue', targeting: 'London · Fashion', dailyCap: 2000, startDate: '01 Jul 2026', endDate: '14 Jul 2026', status: 'Scheduled', metrics: { impressions: 0, clicks: 0, venueSelections: 0, plansCreated: 0, usersJoined: 0, offerClaims: 0 } },
+  { id: 4, name: 'NightOwl Live Sessions', sponsor: 'NightOwl Lounge', package: 'Starter Spotlight', placement: 'Feed', targeting: 'Bristol · Nightlife', dailyCap: 1500, startDate: '20 May 2026', endDate: '20 Jun 2026', status: 'Ended', metrics: { impressions: 22600, clicks: 1450, venueSelections: 196, plansCreated: 64, usersJoined: 312, offerClaims: 88 } },
+  { id: 5, name: 'GreenLeaf Wellness Week', sponsor: 'GreenLeaf Wellness', package: 'City Partner', placement: 'Vibe', targeting: 'Leeds · Wellness', dailyCap: 2500, startDate: '01 Jul 2026', endDate: '07 Jul 2026', status: 'Pending Approval', metrics: { impressions: 0, clicks: 0, venueSelections: 0, plansCreated: 0, usersJoined: 0, offerClaims: 0 } },
 ]
 
 export const defaultCampaignsConfig: CampaignsConfig = {

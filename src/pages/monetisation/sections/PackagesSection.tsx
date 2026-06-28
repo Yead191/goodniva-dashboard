@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import { X, Edit2, Plus } from 'lucide-react'
-import { Card, Badge, IconButton, Toggle, PrimaryButton, DangerButton, FieldWithLabel, PillInput, SelectPill } from '@/components/common'
+import { Card, Badge, IconButton, Toggle, PrimaryButton, DangerButton, FieldWithLabel, PillInput, SelectPill, MoneyInput } from '@/components/common'
 import { colors } from '@/utils/colors'
 import { useMonetisation } from '@/context/MonetisationContext'
 import { useToast } from '@/context/ToastContext'
-import { SectionTitle, DataTable, Td } from '../_shared'
-import type { SponsorshipPackage, ReportingLevel } from '@/types/monetisation'
+import { SectionTitle, DataTable, Td, currencySymbol } from '../_shared'
+import type { SponsorshipPackage, ReportingLevel, Currency, BillingPeriod } from '@/types/monetisation'
 
 const PLACEMENTS = ['Feed', 'Vibe', 'Partner Venue']
-const blank: Omit<SponsorshipPackage, 'id'> = { name: '', price: 0, placements: ['Feed'], priority: 1, reportingLevel: 'Basic', active: true }
+const blank: Omit<SponsorshipPackage, 'id'> = { name: '', price: 0, currency: 'GBP', billingPeriod: 'Monthly', placements: ['Feed'], priority: 1, reportingLevel: 'Basic', active: true }
 
 const PackagesSection = () => {
   const { packages, setPackages, audit, canEdit } = useMonetisation()
@@ -25,11 +25,11 @@ const PackagesSection = () => {
   const handleSave = (data: Omit<SponsorshipPackage, 'id'>, id?: number) => {
     if (id) {
       setPackages((prev) => prev.map((p) => (p.id === id ? { ...p, ...data } : p)))
-      audit('Sponsorship Packages', 'Edited package', `${data.name} — £${data.price}`)
+      audit('Sponsorship Packages', 'Edited package', `${data.name} — ${currencySymbol(data.currency)}${data.price}`)
       showToast(`"${data.name}" updated`, 'success')
     } else {
       setPackages((prev) => [...prev, { ...data, id: Date.now() }])
-      audit('Sponsorship Packages', 'Created package', `${data.name} — £${data.price}`)
+      audit('Sponsorship Packages', 'Created package', `${data.name} — ${currencySymbol(data.currency)}${data.price}`)
       showToast(`"${data.name}" created`, 'success')
     }
     setEditing(null)
@@ -41,11 +41,12 @@ const PackagesSection = () => {
       <SectionTitle title="Sponsorship Packages" subtitle="Create and edit packages — prices, placements, priority and reporting level." action={<PrimaryButton Icon={Plus} label="New Package" onClick={() => canEdit && setCreating(true)} />} />
 
       <Card>
-        <DataTable headers={['PACKAGE', 'PRICE', 'PLACEMENTS', 'PRIORITY', 'REPORTING', 'ACTIVE', 'ACTIONS']}>
+        <DataTable headers={['PACKAGE', 'PRICE', 'BILLING', 'PLACEMENTS', 'PRIORITY', 'REPORTING', 'ACTIVE', 'ACTIONS']}>
           {packages.map((p) => (
             <tr key={p.id} className="hover:bg-surface-subtle transition-colors duration-150">
               <Td className="font-semibold">{p.name}</Td>
-              <Td className="font-bold tabular-nums">£{p.price.toLocaleString()}</Td>
+              <Td className="font-bold tabular-nums">{currencySymbol(p.currency)}{p.price.toLocaleString()}</Td>
+              <Td><Badge text={p.billingPeriod} bg={colors.bgInput} color={colors.textSecondary} /></Td>
               <Td>
                 <div className="flex flex-wrap gap-1">
                   {p.placements.map((pl) => <Badge key={pl} text={pl} bg={colors.primaryLight} color={colors.primary} />)}
@@ -92,7 +93,11 @@ const PackageModal = ({ initial, onCancel, onSubmit }: ModalProps) => {
           <div className="px-7 pb-5">
             <FieldWithLabel label="Package name"><PillInput value={form.name} onChange={(v) => set('name', v)} placeholder="e.g. City Partner" /></FieldWithLabel>
             <div className="grid grid-cols-3 gap-[14px]">
-              <FieldWithLabel label="Price (£)"><PillInput value={String(form.price)} onChange={(v) => set('price', Number(v.replace(/[^0-9.]/g, '')) || 0)} placeholder="750" /></FieldWithLabel>
+              <FieldWithLabel label="Price"><MoneyInput value={form.price} onChange={(v) => set('price', v)} placeholder="750" /></FieldWithLabel>
+              <FieldWithLabel label="Currency"><SelectPill value={form.currency} onChange={(v) => set('currency', v as Currency)} options={['GBP', 'USD', 'EUR']} /></FieldWithLabel>
+              <FieldWithLabel label="Billing period"><SelectPill value={form.billingPeriod} onChange={(v) => set('billingPeriod', v as BillingPeriod)} options={['Monthly', 'Quarterly', 'Annual', 'One-off']} /></FieldWithLabel>
+            </div>
+            <div className="grid grid-cols-2 gap-[14px]">
               <FieldWithLabel label="Priority"><PillInput value={String(form.priority)} onChange={(v) => set('priority', Number(v.replace(/[^0-9]/g, '')) || 1)} placeholder="2" /></FieldWithLabel>
               <FieldWithLabel label="Reporting"><SelectPill value={form.reportingLevel} onChange={(v) => set('reportingLevel', v as ReportingLevel)} options={['Basic', 'Standard', 'Premium']} /></FieldWithLabel>
             </div>

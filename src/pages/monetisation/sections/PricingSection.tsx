@@ -1,9 +1,11 @@
 import { useState } from 'react'
-import { Card, FieldWithLabel, PillInput, SelectPill, PrimaryButton, Toggle } from '@/components/common'
+import { Card, FieldWithLabel, PillInput, SelectPill, PrimaryButton, Toggle, MoneyInput } from '@/components/common'
+import PlanLimitsEditor from '@/components/PlanLimitsEditor'
 import { useMonetisation } from '@/context/MonetisationContext'
 import { useToast } from '@/context/ToastContext'
 import { SectionTitle, currencySymbol } from '../_shared'
 import type { PricingConfig } from '@/types/monetisation'
+import type { PlanLimits } from '@/types'
 
 const numeric = (v: string) => v.replace(/[^0-9.]/g, '')
 
@@ -26,6 +28,7 @@ const PricingSection = () => {
     if (draft.billingPeriod !== pricing.billingPeriod) changes.push(`billing ${pricing.billingPeriod} → ${draft.billingPeriod}`)
     if (draft.trialEnabled !== pricing.trialEnabled) changes.push(`trial ${draft.trialEnabled ? 'enabled' : 'disabled'}`)
     if (draft.trialLengthDays !== pricing.trialLengthDays) changes.push(`trial length ${pricing.trialLengthDays}d → ${draft.trialLengthDays}d`)
+    if (JSON.stringify(draft.trialLimits) !== JSON.stringify(pricing.trialLimits)) changes.push('trial limits updated')
     if (draft.savingsNudgeThreshold !== pricing.savingsNudgeThreshold) changes.push(`savings nudge ${pricing.savingsNudgeThreshold} → ${draft.savingsNudgeThreshold}`)
     if (draft.displayText !== pricing.displayText) changes.push('display text updated')
 
@@ -44,10 +47,10 @@ const PricingSection = () => {
         <h3 className="text-base font-bold text-ink-primary m-0 mb-4">Price &amp; billing</h3>
         <div className="grid grid-cols-3 gap-[14px]">
           <FieldWithLabel label="Monthly amount">
-            <PillInput value={String(draft.amount)} onChange={(v) => set('amount', Number(numeric(v)) || 0)} placeholder="9.99" />
+            <MoneyInput value={draft.amount} onChange={(v) => set('amount', v)} placeholder="9.99" />
           </FieldWithLabel>
           <FieldWithLabel label="Annual amount">
-            <PillInput value={String(draft.annualAmount)} onChange={(v) => set('annualAmount', Number(numeric(v)) || 0)} placeholder="99.99" />
+            <MoneyInput value={draft.annualAmount} onChange={(v) => set('annualAmount', v)} placeholder="99.99" />
           </FieldWithLabel>
           <FieldWithLabel label="Currency">
             <SelectPill value={draft.currency} onChange={(v) => set('currency', v as PricingConfig['currency'])} options={['GBP', 'USD', 'EUR']} />
@@ -76,12 +79,22 @@ const PricingSection = () => {
             checked={draft.trialEnabled}
             onChange={(v) => set('trialEnabled', v)}
             label="Enable free trial"
-            description="Offer new users a free trial of GoodNiva Plus before billing starts."
+            description="Offer new users a time-limited free trial before billing starts. The trial has its own limits below — it does not unlock full GoodNiva Plus."
           />
           <div className="mt-4 max-w-[260px]">
             <FieldWithLabel label="Trial length (days)">
               <PillInput value={String(draft.trialLengthDays)} onChange={(v) => set('trialLengthDays', Number(v.replace(/[^0-9]/g, '')) || 0)} placeholder="7" />
             </FieldWithLabel>
+          </div>
+
+          <div className={`mt-4 pt-4 border-t border-line-light ${draft.trialEnabled ? '' : 'opacity-50 pointer-events-none'}`}>
+            <label className="block text-[13px] font-bold text-ink-primary mb-[2px]">Trial limits &amp; entitlements</label>
+            <p className="text-xs text-ink-muted mt-0 mb-3">What trial users can actually do — kept separate from GoodNiva Plus.</p>
+            <PlanLimitsEditor
+              value={draft.trialLimits}
+              onChange={(v: PlanLimits) => set('trialLimits', v)}
+              canEdit={canEdit && draft.trialEnabled}
+            />
           </div>
         </Card>
       </div>

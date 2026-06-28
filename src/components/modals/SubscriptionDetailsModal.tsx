@@ -1,7 +1,20 @@
 import { X, CheckCircle2, Calendar } from 'lucide-react'
 import { colors } from '@/utils/colors'
 import { PrimaryButton } from '@/components/common'
-import type { Subscription } from '@/types'
+import type { Subscription, PlanLimits } from '@/types'
+import { UNLIMITED } from '@/types'
+
+const cap = (n: number) => (n === UNLIMITED ? 'Unlimited' : String(n))
+
+const limitRows = (l: PlanLimits): { label: string; value: string }[] => [
+  { label: 'Plan joins per week', value: cap(l.weeklyPlanJoins) },
+  { label: 'Plans hosted per month', value: l.monthlyPlansHosted === 0 ? 'None' : cap(l.monthlyPlansHosted) },
+  { label: 'Priority placement', value: l.priorityPlacement ? 'Yes' : 'No' },
+  { label: 'Advanced filters & search', value: l.advancedFilters ? 'Yes' : 'No' },
+  { label: 'See who viewed your plans', value: l.seeWhoViewed ? 'Yes' : 'No' },
+  { label: 'Ad-free experience', value: l.adFree ? 'Yes' : 'No' },
+  { label: 'Priority support', value: l.prioritySupport ? 'Yes' : 'No' },
+]
 
 interface SubscriptionDetailsModalProps {
   sub: Subscription
@@ -33,8 +46,20 @@ const SubscriptionDetailsModal = ({ sub, onClose }: SubscriptionDetailsModalProp
             </ReadonlyValue>
           </ReadonlyField>
 
+          <div className="mb-5">
+            <label className="block text-[13px] font-bold text-ink-primary mb-[10px]">Enforced limits & entitlements</label>
+            <div className="rounded-2xl bg-surface-input divide-y divide-line-light px-4">
+              {limitRows(sub.limits).map((r) => (
+                <div key={r.label} className="flex items-center justify-between py-[11px]">
+                  <span className="text-[13px] text-ink-secondary">{r.label}</span>
+                  <span className="text-[13px] font-semibold text-ink-primary">{r.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
           <div className="mb-4">
-            <label className="block text-[13px] font-bold text-ink-primary mb-[10px]">Features & Limits</label>
+            <label className="block text-[13px] font-bold text-ink-primary mb-[10px]">Features (shown to users)</label>
             <div className="flex flex-col gap-[10px]">
               {sub.features.map((f, i) => (
                 <div key={i} className="h-[46px] rounded-pill bg-surface-input flex items-center px-5 gap-3">

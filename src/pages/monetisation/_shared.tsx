@@ -15,6 +15,8 @@ const STATUS_MAP: Record<string, { bg: string; text: string; dot: string }> = {
   Paused: { bg: colors.warningLight, text: colors.warningText, dot: colors.warning },
   Pending: { bg: colors.warningLight, text: colors.warningText, dot: colors.warning },
   'Pending Approval': { bg: colors.warningLight, text: colors.warningText, dot: colors.warning },
+  'Pending Review': { bg: colors.warningLight, text: colors.warningText, dot: colors.warning },
+  Draft: { bg: colors.bgInput, text: colors.textSecondary, dot: colors.textMuted },
   Scheduled: { bg: colors.infoLight, text: colors.infoText, dot: colors.info },
   Expired: { bg: colors.bgInput, text: colors.textMuted, dot: colors.textMuted },
   Ended: { bg: colors.bgInput, text: colors.textMuted, dot: colors.textMuted },

@@ -219,12 +219,51 @@ export interface ScoreboardEntry {
 }
 
 // Subscription types
+
+/**
+ * Machine-readable entitlements the app enforces for a plan. Unlike `features`
+ * (free-text marketing bullets), these drive what a user can actually do once
+ * their active plan is resolved to entitlements by the backend.
+ *
+ * Numeric caps use -1 to mean "unlimited".
+ */
+export interface PlanLimits {
+  /** Plans a user may join per week. -1 = unlimited. */
+  weeklyPlanJoins: number
+  /** Plans a user may host per month. -1 = unlimited. 0 = hosting disabled. */
+  monthlyPlansHosted: number
+  /** Priority placement in discovery. */
+  priorityPlacement: boolean
+  /** Advanced filters & search. */
+  advancedFilters: boolean
+  /** "See who viewed your plans". */
+  seeWhoViewed: boolean
+  /** Ad-free experience. */
+  adFree: boolean
+  /** Priority support. */
+  prioritySupport: boolean
+}
+
+export const UNLIMITED = -1
+
+export const defaultPlanLimits: PlanLimits = {
+  weeklyPlanJoins: 3,
+  monthlyPlansHosted: 0,
+  priorityPlacement: false,
+  advancedFilters: false,
+  seeWhoViewed: false,
+  adFree: false,
+  prioritySupport: false,
+}
+
 export interface Subscription {
   id: number
   planName: string
   price: string
   duration: string
   features: string[]
+  /** Enforceable entitlements applied to the user's account for this plan. */
+  limits: PlanLimits
   status: 'Active' | 'Cancelled' | 'Expired' | 'Hidden'
   /** Length of the free trial in days. 0 or undefined means no trial. */
   trialDays?: number

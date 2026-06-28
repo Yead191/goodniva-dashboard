@@ -1,4 +1,5 @@
 import type { Subscription, Interest } from '@/types'
+import { UNLIMITED } from '@/types'
 
 export const subscriptionsSeed: Subscription[] = [
   {
@@ -7,6 +8,15 @@ export const subscriptionsSeed: Subscription[] = [
     price: 'Free',
     duration: 'Unlimited',
     features: ['Join up to 3 plans per week', 'Discover local plans', 'Community access', 'Standard support'],
+    limits: {
+      weeklyPlanJoins: 3,
+      monthlyPlansHosted: 0,
+      priorityPlacement: false,
+      advancedFilters: false,
+      seeWhoViewed: false,
+      adFree: false,
+      prioritySupport: false,
+    },
     status: 'Active',
   },
   {
@@ -22,6 +32,15 @@ export const subscriptionsSeed: Subscription[] = [
       'Ad-free experience',
       'Priority support',
     ],
+    limits: {
+      weeklyPlanJoins: UNLIMITED,
+      monthlyPlansHosted: UNLIMITED,
+      priorityPlacement: true,
+      advancedFilters: true,
+      seeWhoViewed: true,
+      adFree: true,
+      prioritySupport: true,
+    },
     status: 'Active',
     trialDays: 7,
   },
@@ -36,6 +55,15 @@ export const subscriptionsSeed: Subscription[] = [
       'Early access to new features',
       'Exclusive host badges',
     ],
+    limits: {
+      weeklyPlanJoins: UNLIMITED,
+      monthlyPlansHosted: UNLIMITED,
+      priorityPlacement: true,
+      advancedFilters: true,
+      seeWhoViewed: true,
+      adFree: true,
+      prioritySupport: true,
+    },
     status: 'Active',
     trialDays: 7,
   },

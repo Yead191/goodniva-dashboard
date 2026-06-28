@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { X, Edit2, Zap, Eye } from 'lucide-react'
-import { Card, Badge, IconButton, PrimaryButton, DangerButton, Toggle, FieldWithLabel, PillInput, SelectPill } from '@/components/common'
+import { Card, Badge, IconButton, PrimaryButton, DangerButton, Toggle, FieldWithLabel, PillInput, SelectPill, MoneyInput } from '@/components/common'
 import { colors } from '@/utils/colors'
 import { useMonetisation } from '@/context/MonetisationContext'
 import { useToast } from '@/context/ToastContext'
@@ -123,7 +123,7 @@ const BoostProductModal = ({ initial, onCancel, onSubmit }: ModalProps) => {
             <FieldWithLabel label="Description"><PillInput value={form.description} onChange={(v) => set('description', v)} placeholder="Short description" /></FieldWithLabel>
             <div className="grid grid-cols-3 gap-[14px]">
               <FieldWithLabel label="Type"><SelectPill value={form.type} onChange={(v) => set('type', v as BoostType)} options={['Access', 'Visibility']} /></FieldWithLabel>
-              <FieldWithLabel label="Price (£)"><PillInput value={String(form.price)} onChange={(v) => set('price', Number(v.replace(/[^0-9.]/g, '')) || 0)} placeholder="1.99" /></FieldWithLabel>
+              <FieldWithLabel label="Price (£)"><MoneyInput value={form.price} onChange={(v) => set('price', v)} placeholder="1.99" /></FieldWithLabel>
               <FieldWithLabel label="Credits"><PillInput value={String(form.credits)} onChange={(v) => set('credits', Number(v.replace(/[^0-9]/g, '')) || 0)} placeholder="1" /></FieldWithLabel>
             </div>
           </div>

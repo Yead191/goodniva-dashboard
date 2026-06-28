@@ -2,7 +2,9 @@ import { useState } from 'react'
 import { X, Plus, CheckCircle2, Trash2, Calendar, CircleDashed, Sparkles } from 'lucide-react'
 import { colors } from '@/utils/colors'
 import { PillInput, FieldWithLabel, PrimaryButton, DangerButton } from '@/components/common'
-import type { Subscription } from '@/types'
+import PlanLimitsEditor from '@/components/PlanLimitsEditor'
+import type { Subscription, PlanLimits } from '@/types'
+import { defaultPlanLimits } from '@/types'
 
 interface SubscriptionFormModalProps {
   mode: 'create' | 'edit'
@@ -22,6 +24,7 @@ const SubscriptionFormModal = ({ mode, initialData, onCancel, onSubmit }: Subscr
     initialData?.features ?? ['Unlimited plan joining & hosting', 'Priority placement in discovery'],
   )
   const [newFeature, setNewFeature] = useState('')
+  const [limits, setLimits] = useState<PlanLimits>(initialData?.limits ?? defaultPlanLimits)
 
   const isEdit = mode === 'edit'
 
@@ -39,7 +42,7 @@ const SubscriptionFormModal = ({ mode, initialData, onCancel, onSubmit }: Subscr
   const handleSubmit = () => {
     if (!planName.trim()) return
     const trialDays = Math.max(0, parseInt(trial, 10) || 0)
-    onSubmit({ planName, price, duration, features, trialDays: trialDays || undefined })
+    onSubmit({ planName, price, duration, features, limits, trialDays: trialDays || undefined })
   }
 
   return (
@@ -79,9 +82,20 @@ const SubscriptionFormModal = ({ mode, initialData, onCancel, onSubmit }: Subscr
               />
             </FieldWithLabel>
 
+            <div className="mb-5">
+              <div className="mb-[6px]">
+                <label className="text-[13px] font-bold text-ink-primary">Enforced limits & entitlements</label>
+                <p className="text-xs text-ink-muted mt-0.5 mb-0">These drive what the app actually lets the user do on this plan.</p>
+              </div>
+              <PlanLimitsEditor value={limits} onChange={setLimits} />
+            </div>
+
             <div className="mb-4">
               <div className="flex justify-between items-center mb-[10px]">
-                <label className="text-[13px] font-bold text-ink-primary">Features & Limits</label>
+                <div>
+                  <label className="text-[13px] font-bold text-ink-primary">Features (shown to users)</label>
+                  <p className="text-xs text-ink-muted mt-0.5 mb-0">Marketing bullets displayed on the paywall — not enforced.</p>
+                </div>
                 <button
                   onClick={() => document.getElementById('new-feature-input')?.focus()}
                   className="inline-flex items-center gap-1 bg-transparent border-none text-primary text-[13px] font-semibold cursor-pointer"

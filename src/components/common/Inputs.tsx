@@ -1,6 +1,56 @@
 import { useState, ChangeEvent, KeyboardEvent } from 'react'
 import { Eye, EyeOff, ChevronDown, LucideIcon } from 'lucide-react'
 
+interface MoneyInputProps {
+  value: number
+  onChange: (val: number) => void
+  placeholder?: string
+  /** Maximum number of decimal places allowed. Defaults to 2. */
+  decimals?: number
+}
+
+/**
+ * Currency/decimal input that keeps its own raw text buffer while editing so
+ * intermediate states like "1." are preserved (fixes "1.99" collapsing to "199").
+ * Emits a parsed number to the parent on every change.
+ */
+export const MoneyInput = ({ value, onChange, placeholder, decimals = 2 }: MoneyInputProps) => {
+  const [focused, setFocused] = useState(false)
+  const [text, setText] = useState<string>(value ? String(value) : '')
+
+  const handleChange = (raw: string) => {
+    // Allow only digits and a single decimal point, capped to `decimals` places.
+    let cleaned = raw.replace(/[^0-9.]/g, '')
+    const firstDot = cleaned.indexOf('.')
+    if (firstDot !== -1) {
+      cleaned =
+        cleaned.slice(0, firstDot + 1) +
+        cleaned.slice(firstDot + 1).replace(/\./g, '').slice(0, decimals)
+    }
+    setText(cleaned)
+    onChange(cleaned === '' || cleaned === '.' ? 0 : Number(cleaned))
+  }
+
+  return (
+    <div
+      className={`relative h-[46px] rounded-pill flex items-center transition-all duration-150 border-2 ${
+        focused ? 'bg-surface border-primary' : 'bg-surface-input border-transparent'
+      }`}
+    >
+      <input
+        type="text"
+        inputMode="decimal"
+        value={text}
+        onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e.target.value)}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        placeholder={placeholder}
+        className="w-full h-full border-none outline-none bg-transparent px-5 text-sm text-ink-primary font-medium rounded-pill"
+      />
+    </div>
+  )
+}
+
 interface PillInputProps {
   value: string
   onChange: (val: string) => void

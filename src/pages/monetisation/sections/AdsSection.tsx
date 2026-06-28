@@ -18,6 +18,17 @@ const AdsSection = () => {
     audit('Native Ads / AdMob', `${v ? 'Enabled' : 'Disabled'} ${label}`, `${label} turned ${v ? 'ON' : 'OFF'}`)
   }
 
+  const togglePlacement = (key: string, label: string) => (v: boolean) => {
+    setAds((a) => ({ ...a, placements: a.placements.map((p) => (p.key === key ? { ...p, enabled: v } : p)) }))
+    audit('Native Ads / AdMob', `${v ? 'Enabled' : 'Disabled'} ${label} placement`, `${label} native ads turned ${v ? 'ON' : 'OFF'}`)
+  }
+
+  const setPacing = (key: 'feedFirstAdPosition' | 'feedRepeatFrequency' | 'feedMaxAdsPerSession', label: string) => (v: string) => {
+    const n = Number(v.replace(/[^0-9]/g, '')) || 0
+    setAds((a) => ({ ...a, [key]: n }))
+    audit('Native Ads / AdMob', `Updated ${label}`, `${label} → ${n}`)
+  }
+
   const commitAdUnitId = (unit: AdUnit) => {
     const next = draftIds[unit.id]
     if (next === undefined || next === unit.adUnitId) return
@@ -46,11 +57,36 @@ const AdsSection = () => {
 
       <Card>
         <h3 className="text-base font-bold text-ink-primary m-0 mb-2">Ad delivery</h3>
-        <Toggle canEdit={canEdit} checked={ads.nativeAdsEnabled} onChange={toggle('nativeAdsEnabled', 'native ads')} label="Enable native ads" description="Show native ad cards within the feed and plan details." />
+        <Toggle canEdit={canEdit} checked={ads.nativeAdsEnabled} onChange={toggle('nativeAdsEnabled', 'native ads')} label="Enable native ads" description="Master switch for native ad cards. Control exactly where they appear below." />
         <Toggle canEdit={canEdit} checked={ads.admobFallbackEnabled} onChange={toggle('admobFallbackEnabled', 'AdMob fallback')} label="Enable AdMob fallback" description="Fall back to AdMob when no native/sponsored inventory is available." />
         <Toggle canEdit={canEdit} checked={ads.mediationEnabled} onChange={toggle('mediationEnabled', 'mediation')} label="Mediation enabled" description="Route AdMob requests through the mediation waterfall." />
         <Toggle canEdit={canEdit} checked={ads.firstSessionSuppression} onChange={toggle('firstSessionSuppression', 'first-session suppression')} label="First-session suppression" description="Hide all ads during a user's very first session." />
       </Card>
+
+      <div className="grid grid-cols-2 gap-4 mt-5">
+        <Card>
+          <h3 className="text-base font-bold text-ink-primary m-0 mb-1">Ad placements</h3>
+          <p className="text-[13px] text-ink-secondary mt-0 mb-2">Choose which pages show native ads. By design ads run on Feed/Vibe only.</p>
+          <div className={ads.nativeAdsEnabled ? '' : 'opacity-50 pointer-events-none'}>
+            {ads.placements.map((p) => (
+              <Toggle
+                key={p.key}
+                canEdit={canEdit && ads.nativeAdsEnabled}
+                checked={p.enabled}
+                onChange={togglePlacement(p.key, p.label)}
+                label={p.label}
+                description={p.description}
+              />
+            ))}
+          </div>
+        </Card>
+        <Card>
+          <h3 className="text-base font-bold text-ink-primary m-0 mb-4">Feed ad pacing</h3>
+          <FieldWithLabel label="First ad position (card #)"><PillInput value={String(ads.feedFirstAdPosition)} onChange={setPacing('feedFirstAdPosition', 'first ad position')} placeholder="4" /></FieldWithLabel>
+          <FieldWithLabel label="Repeat frequency (every N cards)"><PillInput value={String(ads.feedRepeatFrequency)} onChange={setPacing('feedRepeatFrequency', 'repeat frequency')} placeholder="8" /></FieldWithLabel>
+          <FieldWithLabel label="Max ads per session"><PillInput value={String(ads.feedMaxAdsPerSession)} onChange={setPacing('feedMaxAdsPerSession', 'max ads per session')} placeholder="6" /></FieldWithLabel>
+        </Card>
+      </div>
 
       <div className="mt-5">
         <Card>
