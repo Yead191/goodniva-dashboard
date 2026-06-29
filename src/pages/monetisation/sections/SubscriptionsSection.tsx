@@ -4,8 +4,9 @@ import { Card, StatCard, Badge, IconButton, SegmentedTabs } from '@/components/c
 import { colors } from '@/utils/colors'
 import { useMonetisation } from '@/context/MonetisationContext'
 import { useToast } from '@/context/ToastContext'
+import ConfirmDialog from '@/components/modals/ConfirmDialog'
 import { SectionTitle, DataTable, Td, UserCell, StatusPill, EmptyRow } from '../_shared'
-import type { PlusStatus } from '@/types/monetisation'
+import type { PlusStatus, PlusMember } from '@/types/monetisation'
 
 type Filter = 'all' | 'Active' | 'Cancelled' | 'Past Due' | 'Refunded' | 'Expired'
 
@@ -13,6 +14,7 @@ const SubscriptionsSection = () => {
   const { plusMembers, setPlusMembers, audit, canEdit } = useMonetisation()
   const { showToast } = useToast()
   const [filter, setFilter] = useState<Filter>('all')
+  const [confirming, setConfirming] = useState<{ member: PlusMember; action: 'cancel' | 'refund' } | null>(null)
 
   const stats = useMemo(() => {
     const active = plusMembers.filter((m) => m.status === 'Active').length
@@ -27,20 +29,23 @@ const SubscriptionsSection = () => {
   const setStatus = (id: number, status: PlusStatus, extra: Partial<{ refundedAmount: number; cancelledAt: string }> = {}) =>
     setPlusMembers((prev) => prev.map((m) => (m.id === id ? { ...m, status, ...extra } : m)))
 
-  const handleCancel = (id: number) => {
-    const m = plusMembers.find((x) => x.id === id)
-    if (!m) return
-    setStatus(id, 'Cancelled', { cancelledAt: 'Today' })
+  const handleCancel = (m: PlusMember) => {
+    setStatus(m.id, 'Cancelled', { cancelledAt: 'Today' })
     audit('Plus Members', 'Cancelled subscription', `${m.user.name} — ${m.plan}`)
     showToast(`${m.user.name}'s subscription cancelled`, 'warning')
   }
 
-  const handleRefund = (id: number) => {
-    const m = plusMembers.find((x) => x.id === id)
-    if (!m) return
-    setStatus(id, 'Refunded', { refundedAmount: m.amount })
+  const handleRefund = (m: PlusMember) => {
+    setStatus(m.id, 'Refunded', { refundedAmount: m.amount })
     audit('Plus Members', 'Issued refund', `${m.user.name} — £${m.amount.toFixed(2)} (${m.plan})`)
     showToast(`Refund of £${m.amount.toFixed(2)} issued to ${m.user.name}`, 'success')
+  }
+
+  const handleConfirm = () => {
+    if (!confirming) return
+    if (confirming.action === 'cancel') handleCancel(confirming.member)
+    else handleRefund(confirming.member)
+    setConfirming(null)
   }
 
   return (
@@ -89,8 +94,8 @@ const SubscriptionsSection = () => {
                 <Td><StatusPill status={m.status} /></Td>
                 <Td>
                   <div className="flex gap-1">
-                    <IconButton Icon={XCircle} tooltip="Cancel subscription" onClick={() => canEdit && handleCancel(m.id)} />
-                    <IconButton Icon={RotateCcw} tooltip="Issue refund" onClick={() => canEdit && handleRefund(m.id)} />
+                    <IconButton Icon={XCircle} tooltip="Cancel subscription" onClick={() => canEdit && setConfirming({ member: m, action: 'cancel' })} />
+                    <IconButton Icon={RotateCcw} tooltip="Issue refund" onClick={() => canEdit && setConfirming({ member: m, action: 'refund' })} />
                   </div>
                 </Td>
               </tr>
@@ -98,6 +103,15 @@ const SubscriptionsSection = () => {
           )}
         </DataTable>
       </Card>
+
+      {confirming && (
+        <ConfirmDialog
+          action={confirming.action === 'cancel' ? 'cancelSubscription' : 'refundSubscription'}
+          userName={confirming.member.user.name}
+          onCancel={() => setConfirming(null)}
+          onConfirm={handleConfirm}
+        />
+      )}
     </div>
   )
 }

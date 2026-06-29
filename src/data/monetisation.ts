@@ -37,9 +37,13 @@ export const defaultPricingConfig: PricingConfig = {
   trialEnabled: true,
   trialLengthDays: 7,
   // Free trial gets a taste of Plus, not the full thing — its own limits.
+  // Creation extras default to off so they stay paid-only until the admin opts in.
   trialLimits: {
     weeklyPlanJoins: 10,
     monthlyPlansHosted: 2,
+    canCreateGroups: true,
+    canCreateCompetitions: false,
+    canCreateCommunities: false,
     priorityPlacement: false,
     advancedFilters: true,
     seeWhoViewed: false,

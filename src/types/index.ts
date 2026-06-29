@@ -232,6 +232,12 @@ export interface PlanLimits {
   weeklyPlanJoins: number
   /** Plans a user may host per month. -1 = unlimited. 0 = hosting disabled. */
   monthlyPlansHosted: number
+  /** Premium extra: may create groups. */
+  canCreateGroups: boolean
+  /** Premium extra: may create competitions. */
+  canCreateCompetitions: boolean
+  /** Premium extra: may create communities. */
+  canCreateCommunities: boolean
   /** Priority placement in discovery. */
   priorityPlacement: boolean
   /** Advanced filters & search. */
@@ -249,6 +255,9 @@ export const UNLIMITED = -1
 export const defaultPlanLimits: PlanLimits = {
   weeklyPlanJoins: 3,
   monthlyPlansHosted: 0,
+  canCreateGroups: false,
+  canCreateCompetitions: false,
+  canCreateCommunities: false,
   priorityPlacement: false,
   advancedFilters: false,
   seeWhoViewed: false,

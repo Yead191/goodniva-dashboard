@@ -1,16 +1,51 @@
 import { useState } from 'react'
-import { Check, Pause, Play, Ban, Eye, X, MousePointerClick, TrendingUp, MapPin, CalendarPlus, Users, Ticket } from 'lucide-react'
-import { Card, Badge, Toggle, IconButton, PrimaryButton, FieldWithLabel, PillInput } from '@/components/common'
+import { Check, Pause, Play, Ban, Eye, X, Download, MousePointerClick, TrendingUp, MapPin, CalendarPlus, Users, Ticket } from 'lucide-react'
+import { Card, Badge, Toggle, IconButton, PrimaryButton, SecondaryButton, FieldWithLabel, PillInput } from '@/components/common'
 import { colors } from '@/utils/colors'
 import { useMonetisation } from '@/context/MonetisationContext'
 import { useToast } from '@/context/ToastContext'
+import { downloadCsv } from '@/utils/download'
 import { SectionTitle, DataTable, Td, StatusPill } from '../_shared'
 import type { Campaign, CampaignsConfig, CampaignStatus } from '@/types/monetisation'
+
+/** Flatten a campaign (incl. its metrics) into a single CSV row, paired with the header order below. */
+const CAMPAIGN_CSV_HEADERS = [
+  'Campaign', 'Sponsor', 'Package', 'Placement', 'Targeting', 'Daily Cap', 'Start Date', 'End Date', 'Status',
+  'Impressions', 'Clicks', 'CTR %', 'Venue Selections', 'Plans Created', 'Users Joined', 'Offer Claims',
+]
+
+const campaignCsvRow = (c: Campaign): (string | number)[] => {
+  const m = c.metrics
+  const ctr = m.impressions ? ((m.clicks / m.impressions) * 100).toFixed(1) : '0.0'
+  return [
+    c.name, c.sponsor, c.package ?? '', c.placement, c.targeting, c.dailyCap, c.startDate, c.endDate, c.status,
+    m.impressions, m.clicks, ctr, m.venueSelections, m.plansCreated, m.usersJoined, m.offerClaims,
+  ]
+}
+
+/** Make a filesystem-friendly slug from a campaign name. */
+const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'campaign'
 
 const CampaignsSection = () => {
   const { campaigns, setCampaigns, campaignsConfig, setCampaignsConfig, audit, canEdit } = useMonetisation()
   const { showToast } = useToast()
   const [viewing, setViewing] = useState<Campaign | null>(null)
+
+  const exportAll = () => {
+    if (campaigns.length === 0) {
+      showToast('No campaigns to export', 'warning')
+      return
+    }
+    downloadCsv('campaigns-report.csv', CAMPAIGN_CSV_HEADERS, campaigns.map(campaignCsvRow))
+    audit('Campaigns', 'Exported campaigns report', `${campaigns.length} campaigns exported (CSV)`)
+    showToast('Campaigns report downloaded', 'success')
+  }
+
+  const exportOne = (c: Campaign) => {
+    downloadCsv(`campaign-${slug(c.name)}.csv`, CAMPAIGN_CSV_HEADERS, [campaignCsvRow(c)])
+    audit('Campaigns', 'Exported campaign report', c.name)
+    showToast(`${c.name} report downloaded`, 'success')
+  }
 
   const toggle = (key: keyof CampaignsConfig, label: string) => (v: boolean) => {
     setCampaignsConfig((c) => ({ ...c, [key]: v }))
@@ -52,7 +87,10 @@ const CampaignsSection = () => {
       </div>
 
       <Card>
-        <h3 className="text-base font-bold text-ink-primary m-0 mb-4">Active &amp; scheduled campaigns</h3>
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <h3 className="text-base font-bold text-ink-primary m-0">Active &amp; scheduled campaigns</h3>
+          <SecondaryButton Icon={Download} label="Export Report" onClick={exportAll} />
+        </div>
         <DataTable headers={['CAMPAIGN', 'PLACEMENT', 'TARGETING', 'DAILY CAP', 'DATES', 'STATUS', 'ACTIONS']}>
           {campaigns.map((c) => (
             <tr key={c.id} className="hover:bg-surface-subtle transition-colors duration-150">
@@ -65,6 +103,7 @@ const CampaignsSection = () => {
               <Td>
                 <div className="flex gap-1">
                   <IconButton Icon={Eye} tooltip="View performance" onClick={() => setViewing(c)} />
+                  <IconButton Icon={Download} tooltip="Download report" onClick={() => exportOne(c)} />
                   {c.status === 'Pending Approval' && <>
                     <IconButton Icon={Check} tooltip="Approve" onClick={() => updateStatus(c.id, 'Scheduled', 'Approve')} />
                     <IconButton Icon={Ban} tooltip="Reject" danger onClick={() => updateStatus(c.id, 'Ended', 'Reject')} />
@@ -78,14 +117,14 @@ const CampaignsSection = () => {
         </DataTable>
       </Card>
 
-      {viewing && <CampaignDetailModal campaign={viewing} onClose={() => setViewing(null)} />}
+      {viewing && <CampaignDetailModal campaign={viewing} onClose={() => setViewing(null)} onExport={() => exportOne(viewing)} />}
     </div>
   )
 }
 
 const fmt = (n: number) => n.toLocaleString()
 
-const CampaignDetailModal = ({ campaign: c, onClose }: { campaign: Campaign; onClose: () => void }) => {
+const CampaignDetailModal = ({ campaign: c, onClose, onExport }: { campaign: Campaign; onClose: () => void; onExport: () => void }) => {
   const m = c.metrics
   const ctr = m.impressions ? ((m.clicks / m.impressions) * 100).toFixed(1) : '0.0'
 
@@ -134,7 +173,8 @@ const CampaignDetailModal = ({ campaign: c, onClose }: { campaign: Campaign; onC
             )}
           </div>
 
-          <div className="py-[18px] px-7 border-t border-line-light flex justify-end shrink-0">
+          <div className="py-[18px] px-7 border-t border-line-light flex gap-[10px] justify-end shrink-0">
+            <SecondaryButton Icon={Download} label="Download Report" onClick={onExport} />
             <PrimaryButton label="Close" onClick={onClose} />
           </div>
         </div>

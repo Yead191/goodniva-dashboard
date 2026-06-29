@@ -9,6 +9,13 @@ interface PlanLimitsEditorProps {
   canEdit?: boolean
 }
 
+/** Premium "creation" extras — gate who can create groups, competitions, etc. */
+const CREATION_BOOLS: { key: keyof PlanLimits; label: string; description: string }[] = [
+  { key: 'canCreateGroups', label: 'Create groups', description: 'Allow creating new groups.' },
+  { key: 'canCreateCompetitions', label: 'Create competitions', description: 'Allow creating new competitions.' },
+  { key: 'canCreateCommunities', label: 'Create communities', description: 'Allow creating new communities.' },
+]
+
 const BOOLS: { key: keyof PlanLimits; label: string; description: string }[] = [
   { key: 'priorityPlacement', label: 'Priority placement', description: 'Boost this plan’s members higher in discovery.' },
   { key: 'advancedFilters', label: 'Advanced filters & search', description: 'Unlock the full set of discovery filters.' },
@@ -57,7 +64,23 @@ const PlanLimitsEditor = ({ value, onChange, canEdit = true }: PlanLimitsEditorP
         <NumericLimit k="weeklyPlanJoins" label="Plan joins per week" hint="3" />
         <NumericLimit k="monthlyPlansHosted" label="Plans hosted per month" hint="0 = none" />
       </div>
-      <div className="mt-1 rounded-2xl bg-surface-input px-4">
+
+      <div className="mt-3 mb-1 text-[11px] font-bold text-ink-muted tracking-[0.6px] uppercase">Creation permissions (premium extras)</div>
+      <div className="rounded-2xl bg-surface-input px-4">
+        {CREATION_BOOLS.map((b) => (
+          <Toggle
+            key={b.key}
+            canEdit={canEdit}
+            checked={value[b.key] as boolean}
+            onChange={(v) => set(b.key, v)}
+            label={b.label}
+            description={b.description}
+          />
+        ))}
+      </div>
+
+      <div className="mt-3 mb-1 text-[11px] font-bold text-ink-muted tracking-[0.6px] uppercase">Other entitlements</div>
+      <div className="rounded-2xl bg-surface-input px-4">
         {BOOLS.map((b) => (
           <Toggle
             key={b.key}
