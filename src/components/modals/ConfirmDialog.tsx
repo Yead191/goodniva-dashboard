@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { AlertTriangle, Ban, CircleSlash, Lock, RotateCcw, ShieldCheck, ShieldOff, Trash2, UserX, UsersRound, X, LucideIcon } from 'lucide-react'
+import { AlertTriangle, Ban, CircleSlash, Lock, RotateCcw, ShieldCheck, ShieldOff, Trash2, UserX, UsersRound, X, XCircle, LucideIcon } from 'lucide-react'
 import { colors } from '@/utils/colors'
 import { SecondaryButton } from '@/components/common'
 
@@ -30,6 +30,9 @@ export type ConfirmAction =
   | 'suspendAdmin'
   | 'reactivateAdmin'
   | 'deleteCity'
+  | 'cancelSubscription'
+  | 'refundSubscription'
+  | 'refundBoost'
 
 interface ConfirmDialogProps {
   action: ConfirmAction
@@ -206,6 +209,24 @@ const ConfirmDialog = ({ action, userName, onCancel, onConfirm }: ConfirmDialogP
       title: 'Delete City?',
       message: <>Are you sure you want to remove <strong>{userName}</strong> from City Operations? This action cannot be undone.</>,
       confirmLabel: 'Yes, Delete', confirmColor: colors.danger, confirmHover: '#DC2626',
+    },
+    cancelSubscription: {
+      Icon: XCircle, iconBg: colors.dangerLight, iconColor: colors.danger,
+      title: 'Cancel Subscription?',
+      message: <>Are you sure you want to continue with this action? <strong>{userName}</strong>'s subscription will be cancelled and they will lose Plus access.</>,
+      confirmLabel: 'Yes, Cancel Subscription', confirmColor: colors.danger, confirmHover: '#DC2626',
+    },
+    refundSubscription: {
+      Icon: RotateCcw, iconBg: colors.warningLight, iconColor: colors.warning,
+      title: 'Issue Refund?',
+      message: <>Are you sure you want to continue with this action? A refund will be issued to <strong>{userName}</strong> and the subscription marked as refunded.</>,
+      confirmLabel: 'Yes, Issue Refund', confirmColor: colors.warning, confirmHover: '#D97706',
+    },
+    refundBoost: {
+      Icon: RotateCcw, iconBg: colors.warningLight, iconColor: colors.warning,
+      title: 'Refund Boost Purchase?',
+      message: <>Are you sure you want to continue with this action? This Boost purchase by <strong>{userName}</strong> will be refunded.</>,
+      confirmLabel: 'Yes, Refund', confirmColor: colors.warning, confirmHover: '#D97706',
     },
   }
 

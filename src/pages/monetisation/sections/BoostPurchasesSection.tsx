@@ -4,7 +4,9 @@ import { Card, StatCard, Badge, IconButton, SegmentedTabs } from '@/components/c
 import { colors } from '@/utils/colors'
 import { useMonetisation } from '@/context/MonetisationContext'
 import { useToast } from '@/context/ToastContext'
+import ConfirmDialog from '@/components/modals/ConfirmDialog'
 import { SectionTitle, DataTable, Td, UserCell, StatusPill, EmptyRow } from '../_shared'
+import type { BoostPurchase } from '@/types/monetisation'
 
 type Filter = 'all' | 'Completed' | 'Refunded' | 'Pending'
 
@@ -12,6 +14,7 @@ const BoostPurchasesSection = () => {
   const { boostPurchases, setBoostPurchases, audit, canEdit } = useMonetisation()
   const { showToast } = useToast()
   const [filter, setFilter] = useState<Filter>('all')
+  const [confirming, setConfirming] = useState<BoostPurchase | null>(null)
 
   const stats = useMemo(() => {
     const revenue = boostPurchases.filter((p) => p.status === 'Completed').reduce((s, p) => s + p.amount, 0)
@@ -23,12 +26,13 @@ const BoostPurchasesSection = () => {
 
   const rows = filter === 'all' ? boostPurchases : boostPurchases.filter((p) => p.status === filter)
 
-  const handleRefund = (id: string) => {
-    const p = boostPurchases.find((x) => x.id === id)
+  const handleRefund = () => {
+    const p = confirming
     if (!p || !canEdit) return
-    setBoostPurchases((prev) => prev.map((x) => (x.id === id ? { ...x, status: 'Refunded' } : x)))
+    setBoostPurchases((prev) => prev.map((x) => (x.id === p.id ? { ...x, status: 'Refunded' } : x)))
     audit('Boost Purchases', 'Refunded purchase', `${p.id} — ${p.user.name} (£${p.amount.toFixed(2)})`)
     showToast(`Refunded ${p.id}`, 'success')
+    setConfirming(null)
   }
 
   return (
@@ -69,12 +73,21 @@ const BoostPurchasesSection = () => {
                 <Td className="tabular-nums">{p.creditsUsed} / {p.creditsPurchased}</Td>
                 <Td className="text-ink-secondary">{p.date}</Td>
                 <Td><StatusPill status={p.status} /></Td>
-                <Td>{p.status === 'Completed' ? <IconButton Icon={RotateCcw} tooltip="Refund" onClick={() => handleRefund(p.id)} /> : <span className="text-ink-muted">—</span>}</Td>
+                <Td>{p.status === 'Completed' ? <IconButton Icon={RotateCcw} tooltip="Refund" onClick={() => canEdit && setConfirming(p)} /> : <span className="text-ink-muted">—</span>}</Td>
               </tr>
             ))
           )}
         </DataTable>
       </Card>
+
+      {confirming && (
+        <ConfirmDialog
+          action="refundBoost"
+          userName={confirming.user.name}
+          onCancel={() => setConfirming(null)}
+          onConfirm={handleRefund}
+        />
+      )}
     </div>
   )
 }

@@ -89,7 +89,7 @@ const PricingSection = () => {
 
           <div className={`mt-4 pt-4 border-t border-line-light ${draft.trialEnabled ? '' : 'opacity-50 pointer-events-none'}`}>
             <label className="block text-[13px] font-bold text-ink-primary mb-[2px]">Trial limits &amp; entitlements</label>
-            <p className="text-xs text-ink-muted mt-0 mb-3">What trial users can actually do — kept separate from GoodNiva Plus.</p>
+            <p className="text-xs text-ink-muted mt-0 mb-3">Decide exactly what free trial users can do — including premium extras like creating groups, competitions and communities. Anything left off stays exclusive to paid GoodNiva Plus members.</p>
             <PlanLimitsEditor
               value={draft.trialLimits}
               onChange={(v: PlanLimits) => set('trialLimits', v)}
