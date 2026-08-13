@@ -14,6 +14,7 @@ import UsersPage from '@/pages/users/UsersPage'
 import PlansPage from '@/pages/plans/PlansPage'
 import CommunityPage from '@/pages/community/CommunityPage'
 import InterestPage from '@/pages/interest/InterestPage'
+import ActivitiesPage from '@/pages/activities/ActivitiesPage'
 import MonetisationPage from '@/pages/monetisation/MonetisationPage'
 import RevenuePage from '@/pages/revenue/RevenuePage'
 import SafetyTriagePage from '@/pages/safety/SafetyTriagePage'
@@ -47,6 +48,7 @@ const AppRoutes = () => {
         <Route path="/plans" element={<PlansPage />} />
         <Route path="/community" element={<CommunityPage />} />
         <Route path="/interest" element={<InterestPage />} />
+        <Route path="/activities" element={<ActivitiesPage />} />
         <Route
           path="/monetisation"
           element={

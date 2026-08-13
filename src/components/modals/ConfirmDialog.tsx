@@ -9,6 +9,7 @@ export type ConfirmAction =
   | 'block'
   | 'hide'
   | 'deleteInterest'
+  | 'deleteActivity'
   | 'blockUser'
   | 'warn'
   | 'restrictJoin'
@@ -82,6 +83,12 @@ const ConfirmDialog = ({ action, userName, onCancel, onConfirm }: ConfirmDialogP
       Icon: Trash2, iconBg: colors.dangerLight, iconColor: colors.danger,
       title: 'Delete Interest?',
       message: <>Are you sure you want to delete <strong>"{userName}"</strong>? This interest category will be permanently removed.</>,
+      confirmLabel: 'Yes, Delete', confirmColor: colors.danger, confirmHover: '#DC2626',
+    },
+    deleteActivity: {
+      Icon: Trash2, iconBg: colors.dangerLight, iconColor: colors.danger,
+      title: 'Delete Activity?',
+      message: <>Are you sure you want to delete <strong>"{userName}"</strong>? This activity will no longer be available for competitions.</>,
       confirmLabel: 'Yes, Delete', confirmColor: colors.danger, confirmHover: '#DC2626',
     },
     blockUser: {

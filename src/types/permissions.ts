@@ -6,6 +6,7 @@ export type ModuleKey =
   | 'plans'
   | 'community'
   | 'interest'
+  | 'activities'
   | 'monetisation'
   | 'revenue'
   | 'safety'
@@ -29,6 +30,7 @@ export const MODULES: ModuleDef[] = [
   { key: 'plans', label: 'Plans', description: 'Plan listings and moderation', path: '/plans' },
   { key: 'community', label: 'Community', description: 'Communities and groups', path: '/community' },
   { key: 'interest', label: 'Interest', description: 'Interest categories', path: '/interest' },
+  { key: 'activities', label: 'Activities', description: 'Competition activities', path: '/activities' },
   { key: 'monetisation', label: 'Monetisation', description: 'Subscription plans & pricing, boosts, ads, sponsors and offers', path: '/monetisation' },
   { key: 'revenue', label: 'Revenue', description: 'Revenue and subscribers', path: '/revenue' },
   { key: 'safety', label: 'Safety Triage', description: 'Reports and triage queue', path: '/safety' },

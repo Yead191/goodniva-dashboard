@@ -285,6 +285,14 @@ export interface Interest {
   emoji: string
 }
 
+// Activity types (competition activities)
+export interface Activity {
+  id: number
+  name: string
+  image: string
+  enabled: boolean
+}
+
 // Safety Triage types
 export interface TriageUser {
   name: string
