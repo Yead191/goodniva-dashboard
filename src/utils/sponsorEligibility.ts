@@ -20,7 +20,7 @@ const parse = (iso: string): number | null => {
 }
 
 /**
- * Evaluates whether a sponsor may go live. A sponsor is live ONLY when an
+ * Evaluates whether a partner may go live. A partner is live ONLY when an
  * approved profile AND an active, paid, in-window assigned package both hold —
  * neither condition alone is sufficient.
  */

@@ -18,7 +18,7 @@ import {
 import { colors } from '@/utils/colors'
 import { Badge, IconButton, PrimaryButton } from '@/components/common'
 import { getStatusStyle } from '@/utils/statusStyles'
-import type { Community, CommunityGroup } from '@/types'
+import type { Community, CommunityGroup, CommunityMember, ModerationStatus } from '@/types'
 import type { ConfirmAction } from '@/components/modals/ConfirmDialog'
 
 export type GroupAction = Extract<
@@ -31,15 +31,26 @@ export type GroupAction = Extract<
   | 'removeGroupRestriction'
 >
 
+export type MemberAction = Extract<
+  ConfirmAction,
+  'warn' | 'restrictJoin' | 'restrictHost' | 'suspend' | 'ban' | 'removeRestriction'
+>
+
 type Tab = 'overview' | 'members' | 'group' | 'competitions' | 'scoreboard'
 
 interface CommunityDetailsModalProps {
   community: Community
   onClose: () => void
   onGroupAction?: (group: CommunityGroup, action: GroupAction) => void
+  onMemberAction?: (member: CommunityMember, action: MemberAction) => void
 }
 
-const CommunityDetailsModal = ({ community, onClose, onGroupAction }: CommunityDetailsModalProps) => {
+const CommunityDetailsModal = ({
+  community,
+  onClose,
+  onGroupAction,
+  onMemberAction,
+}: CommunityDetailsModalProps) => {
   const [tab, setTab] = useState<Tab>('overview')
 
   const tabs: { key: Tab; label: string }[] = [
@@ -83,7 +94,7 @@ const CommunityDetailsModal = ({ community, onClose, onGroupAction }: CommunityD
 
           <div className="flex-1 overflow-auto py-5 px-7">
             {tab === 'overview' && <OverviewTab community={community} />}
-            {tab === 'members' && <MembersTab community={community} />}
+            {tab === 'members' && <MembersTab community={community} onMemberAction={onMemberAction} />}
             {tab === 'group' && <GroupTab community={community} onGroupAction={onGroupAction} />}
             {tab === 'competitions' && <CompetitionsTab community={community} />}
             {tab === 'scoreboard' && <ScoreboardTab community={community} />}
@@ -120,20 +131,38 @@ const OverviewTab = ({ community }: { community: Community }) => (
   </div>
 )
 
-const MembersTab = ({ community }: { community: Community }) => (
+const MembersTab = ({
+  community,
+  onMemberAction,
+}: {
+  community: Community
+  onMemberAction?: (member: CommunityMember, action: MemberAction) => void
+}) => (
   <div className="flex flex-col gap-[10px]">
     {community.memberList.length === 0 ? (
       <EmptyState message="No member details available" />
-    ) : community.memberList.map((m) => (
-      <div key={m.id} className="flex items-center gap-3 p-3 bg-surface-subtle rounded-xl">
-        <img src={m.avatar} alt="" className="w-10 h-10 rounded-full" />
-        <div className="flex-1">
-          <div className="text-sm font-semibold text-ink-primary">{m.name}</div>
-          <div className="text-xs text-ink-muted">Joined {m.joined}</div>
+    ) : community.memberList.map((m) => {
+      const status = m.status ?? 'Active'
+      const style = getStatusStyle(status)
+      return (
+        <div key={m.id} className="flex items-center gap-3 p-3 bg-surface-subtle rounded-xl">
+          <img src={m.avatar} alt="" className="w-10 h-10 rounded-full" />
+          <div className="min-w-0 flex-1">
+            <div className="text-sm font-semibold text-ink-primary truncate">{m.name}</div>
+            <div className="text-xs text-ink-muted">Joined {m.joined}</div>
+          </div>
+          {status !== 'Active' && <Badge text={status} bg={style.bg} color={style.text} />}
+          <Badge text={m.role} bg={colors.primaryLight} color={colors.primary} />
+          {onMemberAction && (
+            <ModerationMenu
+              tooltip="Member actions"
+              items={memberMenuItems(status)}
+              onAction={(a) => onMemberAction(m, a)}
+            />
+          )}
         </div>
-        <Badge text={m.role} bg={colors.primaryLight} color={colors.primary} />
-      </div>
-    ))}
+      )
+    })}
   </div>
 )
 
@@ -158,7 +187,13 @@ const GroupTab = ({
               <div className="text-sm font-bold text-ink-primary truncate">{g.name}</div>
               <div className="text-xs text-ink-muted">{g.city}</div>
             </div>
-            {onGroupAction && <GroupActionsMenu group={g} onAction={(a) => onGroupAction(g, a)} />}
+            {onGroupAction && (
+              <ModerationMenu
+                tooltip="Group actions"
+                items={groupMenuItems(status)}
+                onAction={(a) => onGroupAction(g, a)}
+              />
+            )}
           </div>
           <div className="flex items-center justify-between">
             <div className="text-[13px] text-ink-secondary">{g.members} members</div>
@@ -170,14 +205,14 @@ const GroupTab = ({
   </div>
 )
 
-interface GroupMenuItem {
-  key: GroupAction
+interface MenuItem<A extends string> {
+  key: A
   label: string
   Icon: LucideIcon
   tone: 'warning' | 'danger' | 'success'
 }
 
-const GROUP_MODERATION_ITEMS: GroupMenuItem[] = [
+const GROUP_MODERATION_ITEMS: MenuItem<GroupAction>[] = [
   { key: 'warnGroup', label: 'Warn Group', Icon: AlertTriangle, tone: 'warning' },
   { key: 'restrictGroupJoin', label: 'Restrict Joining', Icon: CircleSlash, tone: 'warning' },
   { key: 'restrictGroupHost', label: 'Restrict Hosting', Icon: ShieldOff, tone: 'warning' },
@@ -185,27 +220,42 @@ const GROUP_MODERATION_ITEMS: GroupMenuItem[] = [
   { key: 'banGroup', label: 'Ban Group', Icon: Ban, tone: 'danger' },
 ]
 
+const MEMBER_MODERATION_ITEMS: MenuItem<MemberAction>[] = [
+  { key: 'warn', label: 'Warn', Icon: AlertTriangle, tone: 'warning' },
+  { key: 'restrictJoin', label: 'Restrict', Icon: CircleSlash, tone: 'warning' },
+  { key: 'suspend', label: 'Suspend', Icon: Lock, tone: 'warning' },
+  { key: 'ban', label: 'Ban', Icon: Ban, tone: 'danger' },
+]
+
+const groupMenuItems = (status: ModerationStatus): MenuItem<GroupAction>[] => [
+  ...GROUP_MODERATION_ITEMS,
+  ...(status !== 'Active'
+    ? [{ key: 'removeGroupRestriction' as const, label: 'Reactivate', Icon: ShieldCheck, tone: 'success' as const }]
+    : []),
+]
+
+const memberMenuItems = (status: ModerationStatus): MenuItem<MemberAction>[] => [
+  ...MEMBER_MODERATION_ITEMS,
+  ...(status !== 'Active'
+    ? [{ key: 'removeRestriction' as const, label: 'Remove Restriction', Icon: ShieldCheck, tone: 'success' as const }]
+    : []),
+]
+
 const MENU_WIDTH = 190
 
-const GroupActionsMenu = ({
-  group,
+function ModerationMenu<A extends string>({
+  items,
+  tooltip,
   onAction,
 }: {
-  group: CommunityGroup
-  onAction: (action: GroupAction) => void
-}) => {
+  items: MenuItem<A>[]
+  tooltip: string
+  onAction: (action: A) => void
+}) {
   const [open, setOpen] = useState(false)
   const [coords, setCoords] = useState({ top: 0, left: 0 })
   const triggerRef = useRef<HTMLDivElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
-
-  const status = group.status ?? 'Active'
-  const items: GroupMenuItem[] = [
-    ...GROUP_MODERATION_ITEMS,
-    ...(status !== 'Active'
-      ? [{ key: 'removeGroupRestriction' as const, label: 'Reactivate', Icon: ShieldCheck, tone: 'success' as const }]
-      : []),
-  ]
 
   useEffect(() => {
     if (!open) return
@@ -237,7 +287,7 @@ const GroupActionsMenu = ({
     setOpen((o) => !o)
   }
 
-  const toneClass = (tone: GroupMenuItem['tone']) => {
+  const toneClass = (tone: MenuItem<A>['tone']) => {
     if (tone === 'danger') return 'text-danger hover:bg-danger-light'
     if (tone === 'success') return 'text-success hover:bg-surface-subtle'
     return 'text-ink-primary hover:bg-surface-subtle'
@@ -245,7 +295,7 @@ const GroupActionsMenu = ({
 
   return (
     <div className="shrink-0" ref={triggerRef}>
-      <IconButton Icon={MoreVertical} tooltip="Group actions" onClick={toggle} />
+      <IconButton Icon={MoreVertical} tooltip={tooltip} onClick={toggle} />
       {open &&
         createPortal(
           <div

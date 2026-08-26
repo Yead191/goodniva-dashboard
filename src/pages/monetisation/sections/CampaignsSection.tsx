@@ -10,7 +10,7 @@ import type { Campaign, CampaignsConfig, CampaignStatus } from '@/types/monetisa
 
 /** Flatten a campaign (incl. its metrics) into a single CSV row, paired with the header order below. */
 const CAMPAIGN_CSV_HEADERS = [
-  'Campaign', 'Sponsor', 'Package', 'Placement', 'Targeting', 'Daily Cap', 'Start Date', 'End Date', 'Status',
+  'Campaign', 'Partner', 'Package', 'Placement', 'Targeting', 'Daily Cap', 'Start Date', 'End Date', 'Status',
   'Impressions', 'Clicks', 'CTR %', 'Venue Selections', 'Plans Created', 'Users Joined', 'Offer Claims',
 ]
 
@@ -68,13 +68,13 @@ const CampaignsSection = () => {
 
   return (
     <div>
-      <SectionTitle title="Campaigns" subtitle="Manage sponsored cards, partner venues, targeting, caps and dates." />
+      <SectionTitle title="Campaigns" subtitle="Manage partner cards, partner venues, targeting, caps and dates." />
 
       <div className="grid grid-cols-2 gap-4 mb-5">
         <Card>
-          <h3 className="text-base font-bold text-ink-primary m-0 mb-2">Sponsored cards &amp; venues</h3>
-          <Toggle canEdit={canEdit} checked={campaignsConfig.vibeSponsoredCardsEnabled} onChange={toggle('vibeSponsoredCardsEnabled', 'Vibe sponsored cards')} label="Vibe sponsored cards" description="Show sponsored cards in the Vibe surface." />
-          <Toggle canEdit={canEdit} checked={campaignsConfig.feedSponsoredCardsEnabled} onChange={toggle('feedSponsoredCardsEnabled', 'Feed sponsored cards')} label="Feed sponsored cards" description="Show sponsored cards in the main feed." />
+          <h3 className="text-base font-bold text-ink-primary m-0 mb-2">Partner cards &amp; venues</h3>
+          <Toggle canEdit={canEdit} checked={campaignsConfig.vibeSponsoredCardsEnabled} onChange={toggle('vibeSponsoredCardsEnabled', 'Vibe partner cards')} label="Vibe partner cards" description="Show partner cards in the Vibe surface." />
+          <Toggle canEdit={canEdit} checked={campaignsConfig.feedSponsoredCardsEnabled} onChange={toggle('feedSponsoredCardsEnabled', 'Feed partner cards')} label="Feed partner cards" description="Show partner cards in the main feed." />
           <Toggle canEdit={canEdit} checked={campaignsConfig.partnerVenueSuggestionsEnabled} onChange={toggle('partnerVenueSuggestionsEnabled', 'partner venue suggestions')} label="Partner venue suggestions" description="Suggest partner venues when creating plans." />
           <Toggle canEdit={canEdit} checked={campaignsConfig.competitionPartnerVenueEnabled} onChange={toggle('competitionPartnerVenueEnabled', 'competition partner venue suggestions')} label="Competition partner venue suggestions" description="Suggest partner venues for community competitions." />
         </Card>
@@ -129,8 +129,8 @@ const CampaignDetailModal = ({ campaign: c, onClose, onExport }: { campaign: Cam
   const ctr = m.impressions ? ((m.clicks / m.impressions) * 100).toFixed(1) : '0.0'
 
   const stats = [
-    { Icon: Eye, label: 'Impressions', value: fmt(m.impressions), hint: 'Users who discovered this sponsor' },
-    { Icon: MousePointerClick, label: 'Clicks', value: fmt(m.clicks), hint: 'Taps on the sponsored card' },
+    { Icon: Eye, label: 'Impressions', value: fmt(m.impressions), hint: 'Users who discovered this partner' },
+    { Icon: MousePointerClick, label: 'Clicks', value: fmt(m.clicks), hint: 'Taps on the partner card' },
     { Icon: TrendingUp, label: 'Click-through rate', value: `${ctr}%`, hint: 'Clicks ÷ impressions' },
     { Icon: MapPin, label: 'Venue selections', value: fmt(m.venueSelections), hint: 'Chose this venue for a plan' },
     { Icon: CalendarPlus, label: 'Plans created here', value: fmt(m.plansCreated), hint: 'Plans created at this venue' },

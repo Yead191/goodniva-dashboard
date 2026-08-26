@@ -31,7 +31,7 @@ export const MODULES: ModuleDef[] = [
   { key: 'community', label: 'Community', description: 'Communities and groups', path: '/community' },
   { key: 'interest', label: 'Interest', description: 'Interest categories', path: '/interest' },
   { key: 'activities', label: 'Activities', description: 'Competition activities', path: '/activities' },
-  { key: 'monetisation', label: 'Monetisation', description: 'Subscription plans & pricing, boosts, ads, sponsors and offers', path: '/monetisation' },
+  { key: 'monetisation', label: 'Monetisation', description: 'Subscription pricing, boosts, ads, partners and offers', path: '/monetisation' },
   { key: 'revenue', label: 'Revenue', description: 'Revenue and subscribers', path: '/revenue' },
   { key: 'safety', label: 'Safety Triage', description: 'Reports and triage queue', path: '/safety' },
   { key: 'actionCentre', label: 'Action Centre', description: 'Moderation actions log', path: '/action-centre' },

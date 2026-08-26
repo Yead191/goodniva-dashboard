@@ -7,7 +7,7 @@ import { useMonetisation } from '@/context/MonetisationContext'
 import { useToast } from '@/context/ToastContext'
 import { SectionTitle } from '../_shared'
 
-const REPORTS = ['Revenue', 'Ads', 'AdMob', 'Sponsor', 'Boost', 'Trial', 'Subscription', 'Retention'] as const
+const REPORTS = ['Revenue', 'Ads', 'AdMob', 'Partner', 'Boost', 'Trial', 'Subscription', 'Retention'] as const
 
 const PERIODS = ['This month', 'Last 30 days', 'This quarter', 'This year', 'All time'] as const
 type Period = (typeof PERIODS)[number]
@@ -29,7 +29,7 @@ const ReportsSection = () => {
     const subMonthly = plusMembers
       .filter((m) => m.status === 'Active')
       .reduce((s, m) => s + (m.plan === 'Plus Annual' ? m.amount / 12 : m.amount), 0)
-    // Sponsor revenue from actually-assigned, paid packages (not a flat estimate).
+    // Partner revenue from actually-assigned, paid packages (not a flat estimate).
     const sponsorMonthly = sponsors.reduce((sum, s) => {
       const pkg = packages.find((p) => p.id === s.packageId)
       const paid = s.packagePaymentStatus === 'Paid' || s.packagePaymentStatus === 'Manually Approved'
@@ -54,7 +54,7 @@ const ReportsSection = () => {
   const chartData = [
     { stream: 'Subscriptions', value: Math.round(figures.subRevenue), color: colors.primary },
     { stream: 'Boosts', value: Math.round(figures.boostRevenue), color: colors.warning },
-    { stream: 'Sponsors', value: Math.round(figures.sponsorRevenue), color: colors.success },
+    { stream: 'Partners', value: Math.round(figures.sponsorRevenue), color: colors.success },
     { stream: 'Ads / AdMob', value: Math.round(figures.adRevenue), color: colors.info },
   ]
 
@@ -67,7 +67,7 @@ const ReportsSection = () => {
     <div>
       <SectionTitle
         title="Reports"
-        subtitle="All monetisation revenue in one place — subscriptions, sponsorship, Native Ads / AdMob and Boosts."
+        subtitle="All monetisation revenue in one place — subscriptions, partnerships, Native Ads / AdMob and Boosts."
         action={
           <div className="flex items-center gap-2">
             <div className="w-[160px]"><SelectPill value={period} onChange={(v) => setPeriod(v as Period)} options={[...PERIODS]} /></div>
@@ -92,7 +92,7 @@ const ReportsSection = () => {
       <div className="grid grid-cols-4 gap-4 my-5">
         <StatCard Icon={Crown} iconBg={colors.primaryLight} iconColor={colors.primary} label="Subscription Revenue" value={`£${Math.round(figures.subRevenue).toLocaleString()}`} badge={period} badgeTone="info" />
         <StatCard Icon={Zap} iconBg={colors.warningLight} iconColor={colors.warning} label="Boost Revenue" value={`£${figures.boostRevenue.toFixed(0)}`} badge="Completed" badgeTone="success" />
-        <StatCard Icon={Megaphone} iconBg={colors.successLight} iconColor={colors.success} label="Sponsor Revenue" value={`£${Math.round(figures.sponsorRevenue).toLocaleString()}`} badge={`${figures.activeSponsors} active`} badgeTone="success" />
+        <StatCard Icon={Megaphone} iconBg={colors.successLight} iconColor={colors.success} label="Partner Revenue" value={`£${Math.round(figures.sponsorRevenue).toLocaleString()}`} badge={`${figures.activeSponsors} active`} badgeTone="success" />
         <StatCard Icon={Tv} iconBg={colors.infoLight} iconColor={colors.info} label="Ad / AdMob Revenue" value={`£${Math.round(figures.adRevenue).toLocaleString()}`} badge="Est." badgeTone="info" />
       </div>
 

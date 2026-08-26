@@ -10,13 +10,22 @@ import {
 } from 'lucide-react'
 import PageHeader from '@/components/layout/PageHeader'
 import { Card, Badge, IconButton } from '@/components/common'
-import CommunityDetailsModal, { type GroupAction } from '@/components/modals/CommunityDetailsModal'
+import CommunityDetailsModal, {
+  type GroupAction,
+  type MemberAction,
+} from '@/components/modals/CommunityDetailsModal'
 import ConfirmDialog, { ConfirmAction } from '@/components/modals/ConfirmDialog'
 import { communitiesSeed } from '@/data/communities'
 import { useToast } from '@/context/ToastContext'
 import { useAnchoredMenu } from '@/hooks/useAnchoredMenu'
 import { getStatusStyle } from '@/utils/statusStyles'
-import type { Community, CommunityGroup, GroupStatus, ToastTone } from '@/types'
+import type {
+  Community,
+  CommunityGroup,
+  CommunityMember,
+  ModerationStatus,
+  ToastTone,
+} from '@/types'
 
 type CommunityAction = Extract<
   ConfirmAction,
@@ -26,6 +35,7 @@ type CommunityAction = Extract<
 type ConfirmState =
   | { kind: 'community'; action: CommunityAction; community: Community }
   | { kind: 'group'; action: GroupAction; community: Community; group: CommunityGroup }
+  | { kind: 'member'; action: MemberAction; community: Community; member: CommunityMember }
 
 const CommunityPage = () => {
   const [communities, setCommunities] = useState<Community[]>(communitiesSeed)
@@ -37,6 +47,11 @@ const CommunityPage = () => {
     if (!confirm) return
     if (confirm.kind === 'group') {
       applyGroupAction(confirm.community, confirm.group, confirm.action)
+      setConfirm(null)
+      return
+    }
+    if (confirm.kind === 'member') {
+      applyMemberAction(confirm.community, confirm.member, confirm.action)
       setConfirm(null)
       return
     }
@@ -67,6 +82,25 @@ const CommunityPage = () => {
     setCommunities((prev) => prev.map(updateGroups))
     setSelected((prev) => (prev ? updateGroups(prev) : prev))
     const { text, tone } = groupActionToast(group.name, action)
+    showToast(text, tone)
+  }
+
+  const applyMemberAction = (
+    community: Community,
+    member: CommunityMember,
+    action: MemberAction,
+  ) => {
+    const status = memberStatusForAction(action)
+    const updateMembers = (c: Community): Community =>
+      c.id === community.id
+        ? {
+            ...c,
+            memberList: c.memberList.map((m) => (m.id === member.id ? { ...m, status } : m)),
+          }
+        : c
+    setCommunities((prev) => prev.map(updateMembers))
+    setSelected((prev) => (prev ? updateMembers(prev) : prev))
+    const { text, tone } = memberActionToast(member.name, action)
     showToast(text, tone)
   }
 
@@ -107,12 +141,15 @@ const CommunityPage = () => {
           onGroupAction={(group, action) =>
             setConfirm({ kind: 'group', community: selected, group, action })
           }
+          onMemberAction={(member, action) =>
+            setConfirm({ kind: 'member', community: selected, member, action })
+          }
         />
       )}
       {confirm && (
         <ConfirmDialog
           action={confirm.action}
-          userName={confirm.kind === 'group' ? confirm.group.name : confirm.community.name}
+          userName={confirmTargetName(confirm)}
           onCancel={() => setConfirm(null)}
           onConfirm={handleConfirm}
         />
@@ -234,7 +271,18 @@ const CommunityActionsMenu = ({
   )
 }
 
-const groupStatusForAction = (action: GroupAction): GroupStatus => {
+const confirmTargetName = (confirm: ConfirmState): string => {
+  switch (confirm.kind) {
+    case 'group':
+      return confirm.group.name
+    case 'member':
+      return confirm.member.name
+    case 'community':
+      return confirm.community.name
+  }
+}
+
+const groupStatusForAction = (action: GroupAction): ModerationStatus => {
   switch (action) {
     case 'warnGroup':
       return 'Warned'
@@ -268,6 +316,43 @@ const groupActionToast = (
       return { text: `"${name}" has been banned`, tone: 'danger' }
     case 'removeGroupRestriction':
       return { text: `"${name}" has been reactivated`, tone: 'success' }
+  }
+}
+
+const memberStatusForAction = (action: MemberAction): ModerationStatus => {
+  switch (action) {
+    case 'warn':
+      return 'Warned'
+    case 'restrictJoin':
+      return 'Join Restricted'
+    case 'restrictHost':
+      return 'Host Restricted'
+    case 'suspend':
+      return 'Suspended'
+    case 'ban':
+      return 'Banned'
+    case 'removeRestriction':
+      return 'Active'
+  }
+}
+
+const memberActionToast = (
+  name: string,
+  action: MemberAction,
+): { text: string; tone: ToastTone } => {
+  switch (action) {
+    case 'warn':
+      return { text: `Warning sent to ${name}`, tone: 'warning' }
+    case 'restrictJoin':
+      return { text: `${name} restricted from joining plans`, tone: 'warning' }
+    case 'restrictHost':
+      return { text: `${name} restricted from hosting plans`, tone: 'warning' }
+    case 'suspend':
+      return { text: `${name}'s account has been suspended`, tone: 'warning' }
+    case 'ban':
+      return { text: `${name} has been banned`, tone: 'danger' }
+    case 'removeRestriction':
+      return { text: `Restrictions removed for ${name}`, tone: 'success' }
   }
 }
 

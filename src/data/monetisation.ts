@@ -112,10 +112,11 @@ export const defaultRewardedAdsConfig: RewardedAdsConfig = {
   allowedRewards: ['Access credit', 'Visibility credit'],
 }
 
-// ── Sponsors ───────────────────────────────────────────────────────────
+// ── Partners ───────────────────────────────────────────────────────────
 export const sponsorsSeed: Sponsor[] = [
   {
-    id: 1, name: 'BrewHaus Coffee', category: 'Food & Drink',
+    id: 1, name: 'BrewHaus Coffee Ltd', tradingName: 'BrewHaus Coffee', category: 'Food & Drink',
+    vatNumber: 'GB 412 8871 03', companyNumber: '09847215',
     description: 'Independent speciality coffee roaster and meetup space.',
     contactPerson: 'Anna Doyle', contact: 'partners@brewhaus.com', contactPhone: '+44 20 7946 0011',
     website: 'https://brewhaus.com', socialLink: 'https://instagram.com/brewhaus',
@@ -126,7 +127,8 @@ export const sponsorsSeed: Sponsor[] = [
     packageStartDate: '2026-06-01', packageEndDate: '2026-08-31', packagePaymentStatus: 'Paid', joinedDate: '02 Feb 2026',
   },
   {
-    id: 2, name: 'PeakFit Gyms', category: 'Fitness',
+    id: 2, name: 'PeakFit Group Ltd', tradingName: 'PeakFit Gyms', category: 'Fitness',
+    vatNumber: 'GB 288 4410 77', companyNumber: '07731902',
     description: 'City-wide gym chain running community fitness events.',
     contactPerson: 'Marcus Reid', contact: 'marketing@peakfit.com', contactPhone: '+44 161 496 0022',
     website: 'https://peakfit.com', socialLink: 'https://instagram.com/peakfit',
@@ -137,7 +139,8 @@ export const sponsorsSeed: Sponsor[] = [
     packageStartDate: '2026-07-01', packageEndDate: '2026-09-30', packagePaymentStatus: 'Unpaid', joinedDate: '14 Mar 2026',
   },
   {
-    id: 3, name: 'UrbanThreads', category: 'Retail',
+    id: 3, name: 'UrbanThreads', tradingName: 'UrbanThreads', category: 'Retail',
+    vatNumber: 'GB 550 1937 21',
     description: 'Streetwear brand hosting pop-up shopping experiences.',
     contactPerson: 'Priya Sharma', contact: 'hello@urbanthreads.co', contactPhone: '+44 20 7946 0033',
     website: 'https://urbanthreads.co', socialLink: 'https://instagram.com/urbanthreads',
@@ -148,7 +151,8 @@ export const sponsorsSeed: Sponsor[] = [
     packageStartDate: '', packageEndDate: '', packagePaymentStatus: 'Unpaid', joinedDate: '20 Jun 2026',
   },
   {
-    id: 4, name: 'NightOwl Lounge', category: 'Nightlife',
+    id: 4, name: 'NightOwl Hospitality Ltd', tradingName: 'NightOwl Lounge', category: 'Nightlife',
+    vatNumber: 'GB 733 2065 48', companyNumber: '11204773',
     description: 'Late-night music venue and cocktail lounge.',
     contactPerson: 'Tom Walker', contact: 'events@nightowl.com', contactPhone: '+44 117 496 0044',
     website: 'https://nightowl.com', socialLink: 'https://instagram.com/nightowl',
@@ -159,7 +163,8 @@ export const sponsorsSeed: Sponsor[] = [
     packageStartDate: '2026-05-01', packageEndDate: '2026-07-31', packagePaymentStatus: 'Manually Approved', joinedDate: '08 Apr 2026',
   },
   {
-    id: 5, name: 'GreenLeaf Wellness', category: 'Wellness',
+    id: 5, name: 'GreenLeaf Wellness', tradingName: 'GreenLeaf Wellness', category: 'Wellness',
+    vatNumber: '',
     description: 'Wellness studio offering yoga and mindfulness sessions.',
     contactPerson: 'Sofia Alvarez', contact: 'team@greenleaf.com', contactPhone: '+44 113 496 0055',
     website: 'https://greenleaf.com', socialLink: 'https://instagram.com/greenleaf',
@@ -171,7 +176,7 @@ export const sponsorsSeed: Sponsor[] = [
   },
 ]
 
-// ── Sponsorship packages ───────────────────────────────────────────────
+// ── Partnership packages ───────────────────────────────────────────────
 export const packagesSeed: SponsorshipPackage[] = [
   { id: 1, name: 'Starter Spotlight', price: 250, currency: 'GBP', billingPeriod: 'Monthly', placements: ['Feed'], priority: 1, reportingLevel: 'Basic', active: true },
   { id: 2, name: 'City Partner', price: 750, currency: 'GBP', billingPeriod: 'Monthly', placements: ['Feed', 'Vibe'], priority: 2, reportingLevel: 'Standard', active: true },
@@ -199,12 +204,18 @@ export const defaultCampaignsConfig: CampaignsConfig = {
 }
 
 // ── Offers ─────────────────────────────────────────────────────────────
+// partnerId maps to sponsorsSeed above; offers without one are GoodNiva's own.
 export const offersSeed: Offer[] = [
-  { id: 1, code: 'WELCOME20', kind: 'Discount Code', description: '20% off first month of Plus', value: '20% off', redemptions: 342, maxRedemptions: 1000, expiry: '31 Dec 2026', status: 'Active' },
-  { id: 2, code: 'ANNUAL2MO', kind: 'Discount Code', description: '2 months free on annual plan', value: '2 months free', redemptions: 128, maxRedemptions: 500, expiry: '30 Sep 2026', status: 'Active' },
-  { id: 3, code: 'STUDENT50', kind: 'Discount Code', description: '50% off for verified students', value: '50% off', redemptions: 89, maxRedemptions: 2000, expiry: '31 Aug 2026', status: 'Active' },
-  { id: 4, code: 'FOUNDERPERK', kind: 'Perk', description: 'Exclusive host badge for early members', value: 'Host badge', redemptions: 56, maxRedemptions: 100, expiry: '01 Jul 2026', status: 'Scheduled' },
-  { id: 5, code: 'SUMMER15', kind: 'Discount Code', description: '15% off any Boost pack', value: '15% off', redemptions: 410, maxRedemptions: 410, expiry: '01 Jun 2026', status: 'Expired' },
+  { id: 1, code: 'WELCOME20', kind: 'Discount Code', description: '20% off first month of Plus', value: '20% off', venue: '', showInPlanCreation: false, terms: 'New members only. One use per account.', redemptions: 342, maxRedemptions: 1000, expiry: '31 Dec 2026', status: 'Active' },
+  { id: 2, code: 'ANNUAL2MO', kind: 'Discount Code', description: '2 months free on annual plan', value: '2 months free', venue: '', showInPlanCreation: false, terms: 'Applies to the Plus Annual plan only.', redemptions: 128, maxRedemptions: 500, expiry: '30 Sep 2026', status: 'Active' },
+  { id: 3, code: 'STUDENT50', kind: 'Discount Code', description: '50% off for verified students', value: '50% off', venue: '', showInPlanCreation: false, terms: 'Requires student verification.', redemptions: 89, maxRedemptions: 2000, expiry: '31 Aug 2026', status: 'Active' },
+  { id: 4, code: 'FOUNDERPERK', kind: 'Perk', description: 'Exclusive host badge for early members', value: 'Host badge', venue: '', showInPlanCreation: false, terms: 'Awarded once, non-transferable.', redemptions: 56, maxRedemptions: 100, expiry: '01 Jul 2026', status: 'Scheduled' },
+  { id: 5, code: 'SUMMER15', kind: 'Discount Code', description: '15% off any Boost pack', value: '15% off', venue: '', showInPlanCreation: false, terms: 'One Boost pack per order.', redemptions: 410, maxRedemptions: 410, expiry: '01 Jun 2026', status: 'Expired' },
+  { id: 6, code: 'BREWFREE', kind: 'Perk', description: 'Free filter coffee for everyone on the plan', value: 'Free coffee', partnerId: 1, venue: 'BrewHaus Bridge Street', showInPlanCreation: true, terms: 'Up to 6 people. Show the plan in-store.', redemptions: 214, maxRedemptions: 600, expiry: '31 Aug 2026', status: 'Active' },
+  { id: 7, code: 'BREWCAKE', kind: 'Special Offer', description: 'Coffee & cake for £6 when you book a table', value: '£6 bundle', partnerId: 1, venue: '', showInPlanCreation: true, terms: 'Weekdays before 4pm.', redemptions: 97, maxRedemptions: 400, expiry: '31 Aug 2026', status: 'Active' },
+  { id: 8, code: 'PEAKDAY', kind: 'Discount Code', description: 'Free day pass for plan attendees', value: 'Free day pass', partnerId: 2, venue: 'PeakFit Albert Square', showInPlanCreation: true, terms: 'First visit only. 18+.', redemptions: 63, maxRedemptions: 300, expiry: '15 Sep 2026', status: 'Active' },
+  { id: 9, code: 'THREADS10', kind: 'Discount Code', description: '10% off at the Brick Lane pop-up', value: '10% off', partnerId: 3, venue: 'UrbanThreads Brick Lane', showInPlanCreation: true, terms: 'Excludes sale items.', redemptions: 0, maxRedemptions: 250, expiry: '14 Jul 2026', status: 'Scheduled' },
+  { id: 10, code: 'OWLENTRY', kind: 'Perk', description: 'Skip-the-queue entry before 10pm', value: 'Priority entry', partnerId: 4, venue: 'NightOwl Harbourside', showInPlanCreation: false, terms: 'Subject to capacity. Over-21s only.', redemptions: 142, maxRedemptions: 500, expiry: '31 Jul 2026', status: 'Disabled' },
 ]
 
 // ── Audit log seed ─────────────────────────────────────────────────────
@@ -212,5 +223,5 @@ export const auditLogSeed: AuditEntry[] = [
   { id: 1, section: 'Subscription Pricing', action: 'Updated price', detail: 'Plus Monthly £8.99 → £9.99', admin: 'Super Admin', timestamp: '24 Jun 2026, 14:32' },
   { id: 2, section: 'Trials', action: 'Changed trial length', detail: '14 days → 7 days', admin: 'Super Admin', timestamp: '20 Jun 2026, 09:10' },
   { id: 3, section: 'Native Ads / AdMob', action: 'Enabled AdMob fallback', detail: 'AdMob fallback turned ON', admin: 'Super Admin', timestamp: '18 Jun 2026, 16:45' },
-  { id: 4, section: 'Sponsors', action: 'Approved sponsor', detail: 'PeakFit Gyms approved', admin: 'Super Admin', timestamp: '14 Mar 2026, 11:20' },
+  { id: 4, section: 'Partners', action: 'Approved partner', detail: 'PeakFit Gyms approved', admin: 'Super Admin', timestamp: '14 Mar 2026, 11:20' },
 ]

@@ -7,12 +7,19 @@ import {
   FileText,
   Flag,
   MapPin,
+  ShieldCheck,
   ShieldOff,
   UserPlus,
   Star,
   X,
 } from 'lucide-react'
 import { colors } from '@/utils/colors'
+import {
+  activeTrustBadge,
+  reportedChecks,
+  verificationCheckStyle,
+  verificationStatusStyle,
+} from '@/utils/verification'
 import { Badge, PrimaryButton } from '@/components/common'
 import type {
   AttendanceRecord,
@@ -20,6 +27,7 @@ import type {
   User,
   UserPlanRef,
   UserReport,
+  VerificationChecks,
 } from '@/types'
 
 interface UserDetailsModalProps {
@@ -31,6 +39,8 @@ const UserDetailsModal = ({ user, onClose }: UserDetailsModalProps) => {
   const activity = user.activity
   const noShows = activity?.attendance.filter((a) => a.outcome === 'No-Show') ?? []
   const restrictionPills = buildRestrictionPills(user)
+  const verification = user.verification
+  const trustBadge = activeTrustBadge(verification)
 
   return (
     <>
@@ -48,7 +58,7 @@ const UserDetailsModal = ({ user, onClose }: UserDetailsModalProps) => {
             <div className="text-center mb-6">
               <div className="relative inline-block mb-3">
                 <img src={user.avatar} alt={user.name} className="w-24 h-24 rounded-full object-cover" />
-                {user.verified && (
+                {verification.status === 'Verified' && (
                   <div className="absolute bottom-1 right-1 w-7 h-7 rounded-full bg-success text-white border-[3px] border-surface flex items-center justify-center">
                     <CheckCircle2 size={14} />
                   </div>
@@ -79,14 +89,33 @@ const UserDetailsModal = ({ user, onClose }: UserDetailsModalProps) => {
               )}
             </Section>
 
-            {user.identityInfo && (
-              <Section title="Identity Info">
-                <InfoRow label="Full Name" value={user.identityInfo.fullName} />
-                <InfoRow label="Date of Birth" value={user.identityInfo.dateOfBirth} />
-                <InfoRow label="ID Type" value={user.identityInfo.idType} />
-                <InfoRow label="ID Number" value={user.identityInfo.idNumber} last />
-              </Section>
-            )}
+            <Section title="Identity Verification" icon={ShieldCheck}>
+              <InfoRow
+                label="Status"
+                value={<Badge {...verificationStatusStyle(verification.status)} />}
+              />
+              <InfoRow
+                label="Badge"
+                value={
+                  trustBadge ? (
+                    <Badge text={trustBadge} bg={colors.primaryLight} color={colors.primary} />
+                  ) : (
+                    'Not granted'
+                  )
+                }
+              />
+              <InfoRow label="Provider" value={verification.provider ?? 'Not configured'} />
+              <InfoRow label="Verification method" value={verification.method ?? 'Not provided'} />
+              <InfoRow label="Age requirement" value={verification.ageRequirement ?? 'Not confirmed'} />
+              <InfoRow label="Verified at" value={verification.verifiedAt ?? 'Never verified'} />
+              <InfoRow label="Verification reference" value={verification.reference ?? 'None issued'} />
+              <InfoRow label="Attempts" value={String(verification.attempts)} />
+              <InfoRow label="Checks" value={<ChecksList checks={verification.checks} />} />
+              <div className="text-[12px] text-ink-muted pt-[10px]">
+                Managed by the verification provider. ID numbers, document scans and selfies are not
+                available in admin view.
+              </div>
+            </Section>
 
             {user.interestInfo && (
               <Section title="Interests & Activity">
@@ -164,12 +193,33 @@ const Section = ({
   )
 }
 
-const InfoRow = ({ label, value, last }: { label: string; value: string; last?: boolean }) => (
-  <div className={`flex justify-between py-[10px] ${last ? '' : 'border-b border-line-light'}`}>
-    <span className="text-[13px] text-ink-secondary">{label}</span>
+const InfoRow = ({
+  label,
+  value,
+  last,
+}: {
+  label: string
+  value: React.ReactNode
+  last?: boolean
+}) => (
+  <div className={`flex justify-between items-center gap-3 py-[10px] ${last ? '' : 'border-b border-line-light'}`}>
+    <span className="text-[13px] text-ink-secondary shrink-0">{label}</span>
     <span className="text-sm font-semibold text-ink-primary text-right">{value}</span>
   </div>
 )
+
+const ChecksList = ({ checks }: { checks?: VerificationChecks }) => {
+  const reported = reportedChecks(checks)
+  if (reported.length === 0) return <span className="text-sm text-ink-muted">Not provided</span>
+  return (
+    <div className="flex flex-wrap gap-[6px] justify-end">
+      {reported.map((c) => {
+        const style = verificationCheckStyle(c.result)
+        return <Badge key={c.key} {...style} text={`${c.label} · ${style.text}`} />
+      })}
+    </div>
+  )
+}
 
 const EmptyHint = ({ text }: { text: string }) => (
   <div className="text-[13px] text-ink-muted py-2">{text}</div>

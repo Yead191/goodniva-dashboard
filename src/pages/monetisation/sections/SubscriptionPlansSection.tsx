@@ -23,7 +23,7 @@ const SubscriptionPlansSection = () => {
   const handleCreate = (data: Omit<Subscription, 'id' | 'status'>) => {
     setSubs((prev) => [...prev, { ...data, id: Date.now(), status: 'Active' }])
     setShowCreate(false)
-    audit('Subscription Plans', 'Created plan', `${data.planName} — ${data.price} / ${data.duration}`)
+    audit('Subscription Pricing', 'Created plan', `${data.planName} — ${data.price} / ${data.duration}`)
     showToast(`Plan "${data.planName}" created`, 'success')
   }
 
@@ -31,13 +31,13 @@ const SubscriptionPlansSection = () => {
     if (!editing) return
     setSubs((prev) => prev.map((s) => (s.id === editing.id ? { ...s, ...data } : s)))
     setEditing(null)
-    audit('Subscription Plans', 'Edited plan', `${data.planName} — ${data.price} / ${data.duration}`)
+    audit('Subscription Pricing', 'Edited plan', `${data.planName} — ${data.price} / ${data.duration}`)
     showToast(`Plan "${data.planName}" updated`, 'success')
   }
 
   const handleHide = () => {
     if (!confirming) return
-    audit('Subscription Plans', 'Hid plan from public', confirming.planName)
+    audit('Subscription Pricing', 'Hid plan from public', confirming.planName)
     showToast(`"${confirming.planName}" has been hidden from public`, 'warning')
     setConfirming(null)
   }
@@ -45,7 +45,7 @@ const SubscriptionPlansSection = () => {
   return (
     <div>
       <SectionTitle
-        title="Subscription Plans"
+        title="Subscription Pricing"
         subtitle="The GoodNiva plan catalogue — names, prices, durations and feature lists shown to users."
         action={<PrimaryButton label="New Plan" onClick={() => canEdit && setShowCreate(true)} />}
       />

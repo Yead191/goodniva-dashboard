@@ -116,7 +116,7 @@ export interface RewardedAdsConfig {
   allowedRewards: string[]
 }
 
-// ── Sponsors & packages ────────────────────────────────────────────────
+// ── Partners & packages ────────────────────────────────────────────────
 export type SponsorStatus = 'Draft' | 'Pending Review' | 'Approved' | 'Active' | 'Paused' | 'Rejected'
 export type SafetyStatus = 'Pending' | 'Approved' | 'Rejected'
 export type CoveringRadius = '1km' | '5km' | '10km' | '25km' | 'City-wide'
@@ -127,10 +127,16 @@ export const COVERING_RADII: CoveringRadius[] = ['1km', '5km', '10km', '25km', '
 
 export interface Sponsor {
   id: number
-  /** Business / sponsor name. */
+  /** Registered business / partner name. */
   name: string
+  /** Public-facing trading name, when it differs from the registered name. */
+  tradingName: string
   category: string
   description: string
+  // Registration & reporting
+  vatNumber: string
+  /** Company registration number — optional, not every partner is incorporated. */
+  companyNumber?: string
   // Contact
   contactPerson: string
   /** Primary contact email. */
@@ -159,8 +165,8 @@ export interface Sponsor {
   safetyStatus: SafetyStatus
   /** Internal admin-only notes, not shown to users. */
   adminNotes: string
-  // Package assignment (the sponsor's contract for a package)
-  /** Sponsorship package this sponsor is assigned to. */
+  // Package assignment (the partner's contract for a package)
+  /** Partnership package this partner is assigned to. */
   packageId?: number
   /** Assignment start date (ISO yyyy-mm-dd). */
   packageStartDate: string
@@ -186,7 +192,7 @@ export interface SponsorshipPackage {
   active: boolean
 }
 
-/** Payment state of a sponsor's assigned package. */
+/** Payment state of a partner's assigned package. */
 export type PaymentStatus = 'Unpaid' | 'Paid' | 'Manually Approved'
 export const PAYMENT_STATUSES: PaymentStatus[] = ['Unpaid', 'Paid', 'Manually Approved']
 
@@ -194,11 +200,11 @@ export const PAYMENT_STATUSES: PaymentStatus[] = ['Unpaid', 'Paid', 'Manually Ap
 export type CampaignStatus = 'Live' | 'Scheduled' | 'Paused' | 'Ended' | 'Pending Approval'
 export type CampaignPlacement = 'Vibe' | 'Feed' | 'Partner Venue'
 
-/** Sponsor-facing performance metrics for a campaign. */
+/** Partner-facing performance metrics for a campaign. */
 export interface CampaignMetrics {
   impressions: number
   clicks: number
-  /** Times users picked this sponsor's venue when creating a plan. */
+  /** Times users picked this partner's venue when creating a plan. */
   venueSelections: number
   /** Plans created at this venue. */
   plansCreated: number
@@ -235,7 +241,9 @@ export interface CampaignsConfig {
 
 // ── Offers ─────────────────────────────────────────────────────────────
 export type OfferStatus = 'Active' | 'Scheduled' | 'Expired' | 'Disabled'
-export type OfferKind = 'Discount Code' | 'Perk'
+export type OfferKind = 'Discount Code' | 'Special Offer' | 'Perk'
+
+export const OFFER_KINDS: OfferKind[] = ['Discount Code', 'Special Offer', 'Perk']
 
 export interface Offer {
   id: number
@@ -243,6 +251,17 @@ export interface Offer {
   kind: OfferKind
   description: string
   value: string
+  /**
+   * Partner the offer belongs to. Undefined marks a GoodNiva platform-wide
+   * offer (e.g. a Plus subscription discount) that no partner funds.
+   */
+  partnerId?: number
+  /** Single partner venue the offer is limited to. Empty means all their venues. */
+  venue: string
+  /** Surface this offer when a user picks the partner's venue while creating a plan. */
+  showInPlanCreation: boolean
+  /** Short user-facing terms shown alongside the offer. */
+  terms: string
   redemptions: number
   maxRedemptions: number
   expiry: string

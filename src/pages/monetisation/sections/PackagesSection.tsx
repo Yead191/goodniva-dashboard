@@ -19,17 +19,17 @@ const PackagesSection = () => {
   const toggleActive = (p: SponsorshipPackage) => {
     if (!canEdit) return
     setPackages((prev) => prev.map((x) => (x.id === p.id ? { ...x, active: !x.active } : x)))
-    audit('Sponsorship Packages', `${p.active ? 'Paused' : 'Activated'} package`, p.name)
+    audit('Partnership Packages', `${p.active ? 'Paused' : 'Activated'} package`, p.name)
   }
 
   const handleSave = (data: Omit<SponsorshipPackage, 'id'>, id?: number) => {
     if (id) {
       setPackages((prev) => prev.map((p) => (p.id === id ? { ...p, ...data } : p)))
-      audit('Sponsorship Packages', 'Edited package', `${data.name} — ${currencySymbol(data.currency)}${data.price}`)
+      audit('Partnership Packages', 'Edited package', `${data.name} — ${currencySymbol(data.currency)}${data.price}`)
       showToast(`"${data.name}" updated`, 'success')
     } else {
       setPackages((prev) => [...prev, { ...data, id: Date.now() }])
-      audit('Sponsorship Packages', 'Created package', `${data.name} — ${currencySymbol(data.currency)}${data.price}`)
+      audit('Partnership Packages', 'Created package', `${data.name} — ${currencySymbol(data.currency)}${data.price}`)
       showToast(`"${data.name}" created`, 'success')
     }
     setEditing(null)
@@ -38,7 +38,7 @@ const PackagesSection = () => {
 
   return (
     <div>
-      <SectionTitle title="Sponsorship Packages" subtitle="Create and edit packages — prices, placements, priority and reporting level." action={<PrimaryButton Icon={Plus} label="New Package" onClick={() => canEdit && setCreating(true)} />} />
+      <SectionTitle title="Partnership Packages" subtitle="Create and edit packages — prices, placements, priority and reporting level." action={<PrimaryButton Icon={Plus} label="New Package" onClick={() => canEdit && setCreating(true)} />} />
 
       <Card>
         <DataTable headers={['PACKAGE', 'PRICE', 'BILLING', 'PLACEMENTS', 'PRIORITY', 'REPORTING', 'ACTIVE', 'ACTIONS']}>

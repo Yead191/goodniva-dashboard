@@ -1,13 +1,12 @@
 import { useState } from 'react'
 import {
-  Layers, Crown, Tag, Sparkles, Zap, ShoppingBag, Tv, Gift, Megaphone, Package, Rocket, Ticket, BarChart3, History, type LucideIcon,
+  Crown, Tag, Sparkles, Zap, ShoppingBag, Tv, Gift, Megaphone, Package, Rocket, Ticket, BarChart3, History, type LucideIcon,
 } from 'lucide-react'
 import PageHeader from '@/components/layout/PageHeader'
 import { Card } from '@/components/common'
 import { MonetisationProvider, useMonetisation } from '@/context/MonetisationContext'
 import SubscriptionPlansSection from './sections/SubscriptionPlansSection'
 import SubscriptionsSection from './sections/SubscriptionsSection'
-import PricingSection from './sections/PricingSection'
 import TrialsSection from './sections/TrialsSection'
 import BoostProductsSection from './sections/BoostProductsSection'
 import BoostPurchasesSection from './sections/BoostPurchasesSection'
@@ -21,7 +20,7 @@ import ReportsSection from './sections/ReportsSection'
 import AuditLogSection from './sections/AuditLogSection'
 
 type SectionKey =
-  | 'subscriptionPlans' | 'subscriptions' | 'pricing' | 'trials'
+  | 'subscriptionPlans' | 'subscriptions' | 'trials'
   | 'boostProducts' | 'boostPurchases'
   | 'ads' | 'rewarded'
   | 'sponsors' | 'packages' | 'campaigns'
@@ -35,9 +34,8 @@ const NAV_GROUPS: NavGroup[] = [
   {
     title: 'Subscriptions',
     items: [
-      { key: 'subscriptionPlans', label: 'Subscription Plans', Icon: Layers },
+      { key: 'subscriptionPlans', label: 'Subscription Pricing', Icon: Tag },
       { key: 'subscriptions', label: 'Plus Members', Icon: Crown },
-      { key: 'pricing', label: 'Subscription Pricing', Icon: Tag },
       { key: 'trials', label: 'Trials', Icon: Sparkles },
     ],
   },
@@ -56,10 +54,10 @@ const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    title: 'Sponsorship',
+    title: 'Partnerships',
     items: [
-      { key: 'sponsors', label: 'Sponsors', Icon: Megaphone },
-      { key: 'packages', label: 'Sponsorship Packages', Icon: Package },
+      { key: 'sponsors', label: 'Partners', Icon: Megaphone },
+      { key: 'packages', label: 'Partnership Packages', Icon: Package },
       { key: 'campaigns', label: 'Campaigns', Icon: Rocket },
     ],
   },
@@ -79,7 +77,6 @@ const NAV_GROUPS: NavGroup[] = [
 const SECTION_COMPONENTS: Record<SectionKey, () => JSX.Element> = {
   subscriptionPlans: SubscriptionPlansSection,
   subscriptions: SubscriptionsSection,
-  pricing: PricingSection,
   trials: TrialsSection,
   boostProducts: BoostProductsSection,
   boostPurchases: BoostPurchasesSection,
@@ -102,7 +99,7 @@ const MonetisationInner = () => {
     <div className="py-7 px-8">
       <PageHeader
         title="Monetisation"
-        subtitle="Edit subscriptions, boosts, ads, sponsors and offers without an app release. All changes are permission-controlled and audit-logged."
+        subtitle="Edit subscriptions, boosts, ads, partners and offers without an app release. All changes are permission-controlled and audit-logged."
       />
 
       {!canEdit && (

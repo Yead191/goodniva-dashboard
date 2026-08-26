@@ -52,19 +52,45 @@ export interface User {
   location: string
   avatar: string
   subscription: 'Premium' | 'Professional' | 'Starter' | 'Free'
-  verified: boolean
   accountStatus: UserAccountStatus
   restrictions: UserRestrictions
-  identityInfo?: IdentityInfo
+  verification: IdentityVerification
   interestInfo?: InterestInfo
   activity?: UserActivity
 }
 
-export interface IdentityInfo {
-  fullName: string
-  dateOfBirth: string
-  idType: string
-  idNumber: string
+export type VerificationStatus = 'Verified' | 'Pending' | 'Not Verified' | 'Failed' | 'Expired'
+
+export type VerificationCheckResult = 'Passed' | 'Failed' | 'Not Provided'
+
+export interface VerificationChecks {
+  document?: VerificationCheckResult
+  faceMatch?: VerificationCheckResult
+  liveness?: VerificationCheckResult
+  age?: VerificationCheckResult
+}
+
+/**
+ * Provider-owned identity verification outcome. Admins see only the result,
+ * never the underlying evidence: no ID/passport numbers, document scans or
+ * selfie images, and no manual approval controls.
+ */
+export interface IdentityVerification {
+  status: VerificationStatus
+  /** Trust badge granted on success, e.g. "Verified to Meet". */
+  badge?: string
+  /** Verification provider. Omitted when no provider is configured. */
+  provider?: string
+  /** e.g. "Government ID + Selfie". Omitted where the provider reports none. */
+  method?: string
+  /** e.g. "18+ confirmed". Omitted where age was not part of the check. */
+  ageRequirement?: string
+  verifiedAt?: string
+  /** Internal verification ID or provider reference — never a document number. */
+  reference?: string
+  attempts: number
+  /** Per-check outcomes; individual checks are omitted when not reported. */
+  checks?: VerificationChecks
 }
 
 export interface InterestInfo {
@@ -172,21 +198,23 @@ export interface Community {
   scoreboard: ScoreboardEntry[]
 }
 
-export interface CommunityMember {
-  id: number
-  name: string
-  avatar: string
-  role: string
-  joined: string
-}
-
-export type GroupStatus =
+export type ModerationStatus =
   | 'Active'
   | 'Warned'
   | 'Join Restricted'
   | 'Host Restricted'
   | 'Suspended'
   | 'Banned'
+
+export interface CommunityMember {
+  id: number
+  name: string
+  avatar: string
+  role: string
+  joined: string
+  /** Moderation state of the member. Treated as 'Active' when omitted. */
+  status?: ModerationStatus
+}
 
 export interface CommunityGroup {
   id: number
@@ -195,7 +223,7 @@ export interface CommunityGroup {
   city: string
   avatar: string
   /** Moderation state of the group. Treated as 'Active' when omitted. */
-  status?: GroupStatus
+  status?: ModerationStatus
 }
 
 export interface Competition {

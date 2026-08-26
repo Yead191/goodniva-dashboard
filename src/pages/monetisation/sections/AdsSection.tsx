@@ -58,7 +58,7 @@ const AdsSection = () => {
       <Card>
         <h3 className="text-base font-bold text-ink-primary m-0 mb-2">Ad delivery</h3>
         <Toggle canEdit={canEdit} checked={ads.nativeAdsEnabled} onChange={toggle('nativeAdsEnabled', 'native ads')} label="Enable native ads" description="Master switch for native ad cards. Control exactly where they appear below." />
-        <Toggle canEdit={canEdit} checked={ads.admobFallbackEnabled} onChange={toggle('admobFallbackEnabled', 'AdMob fallback')} label="Enable AdMob fallback" description="Fall back to AdMob when no native/sponsored inventory is available." />
+        <Toggle canEdit={canEdit} checked={ads.admobFallbackEnabled} onChange={toggle('admobFallbackEnabled', 'AdMob fallback')} label="Enable AdMob fallback" description="Fall back to AdMob when no native/partner inventory is available." />
         <Toggle canEdit={canEdit} checked={ads.mediationEnabled} onChange={toggle('mediationEnabled', 'mediation')} label="Mediation enabled" description="Route AdMob requests through the mediation waterfall." />
         <Toggle canEdit={canEdit} checked={ads.firstSessionSuppression} onChange={toggle('firstSessionSuppression', 'first-session suppression')} label="First-session suppression" description="Hide all ads during a user's very first session." />
       </Card>

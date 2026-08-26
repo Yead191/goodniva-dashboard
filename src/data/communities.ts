@@ -17,7 +17,7 @@ export const communitiesSeed: Community[] = [
     type: 'Fitness / Outdoor',
     memberList: [
       { id: 1, name: 'Sarah Jenkins', avatar: 'https://i.pravatar.cc/80?img=1', role: 'Admin', joined: 'Jan 2024' },
-      { id: 2, name: 'Mark Rivera', avatar: 'https://i.pravatar.cc/80?img=3', role: 'Moderator', joined: 'Jan 2024' },
+      { id: 2, name: 'Mark Rivera', avatar: 'https://i.pravatar.cc/80?img=3', role: 'Member', joined: 'Jan 2024' },
       { id: 3, name: 'Priya Das', avatar: 'https://i.pravatar.cc/80?img=5', role: 'Member', joined: 'Feb 2024' },
       { id: 4, name: 'Alex Chen', avatar: 'https://i.pravatar.cc/80?img=11', role: 'Member', joined: 'Feb 2024' },
       { id: 5, name: 'Nina Patel', avatar: 'https://i.pravatar.cc/80?img=47', role: 'Member', joined: 'Mar 2024' },

@@ -10,7 +10,6 @@ import {
   ShieldCheck,
   ShieldOff,
   Trash2,
-  UserX,
   type LucideIcon,
 } from 'lucide-react'
 import PageHeader from '@/components/layout/PageHeader'
@@ -21,6 +20,7 @@ import { usersSeed } from '@/data/users'
 import { useToast } from '@/context/ToastContext'
 import { useAnchoredMenu } from '@/hooks/useAnchoredMenu'
 import { colors } from '@/utils/colors'
+import { verificationStatusStyle } from '@/utils/verification'
 import type { User, UserAccountStatus } from '@/types'
 
 interface ConfirmState {
@@ -120,11 +120,7 @@ const UserRow = ({ user, onView, onAction }: UserRowProps) => {
         <StatusCell status={user.accountStatus} restrictions={user.restrictions} />
       </td>
       <td className="py-[14px] px-4 border-b border-line-light">
-        {user.verified ? (
-          <Badge text="• Verified" bg={colors.successLight} color={colors.successText} />
-        ) : (
-          <Badge text="• Not Verified" bg={colors.dangerLight} color={colors.dangerText} />
-        )}
+        <Badge {...verificationStatusStyle(user.verification.status)} />
       </td>
       <td className="py-[14px] px-4 border-b border-line-light">
         <div className="flex gap-1 items-center">
