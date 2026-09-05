@@ -64,25 +64,79 @@ const ManageAdminPage = () => {
     return { total, supers, active }
   }, [admins])
 
+  const openCreate = () => {
+    setEditing(null)
+    setMode('create')
+  }
+
+  const openEdit = (admin: Admin) => {
+    setEditing(admin)
+    setMode('edit')
+  }
+
+  const closeForm = () => {
+    setMode(null)
+    setEditing(null)
+  }
+
   const handleCreate = (data: Omit<Admin, 'id' | 'createdAt'>) => {
+    const emailTaken = admins.some(
+      (a) => a.email.toLowerCase() === data.email.trim().toLowerCase(),
+    )
+    if (emailTaken) {
+      showToast('An admin with this email already exists', 'danger')
+      return
+    }
+
     const newAdmin: Admin = {
       ...data,
+      email: data.email.trim(),
+      name: data.name.trim(),
       id: Date.now(),
       createdAt: new Date().toISOString().slice(0, 10),
     }
     setAdmins((prev) => [newAdmin, ...prev])
-    setMode(null)
+    closeForm()
     showToast(`${newAdmin.name} added as ${roleLabel(newAdmin.role)}`, 'success')
   }
 
   const handleUpdate = (data: Omit<Admin, 'id' | 'createdAt'>) => {
     if (!editing) return
-    setAdmins((prev) =>
-      prev.map((a) => (a.id === editing.id ? { ...a, ...data } : a))
+    const emailTaken = admins.some(
+      (a) =>
+        a.id !== editing.id &&
+        a.email.toLowerCase() === data.email.trim().toLowerCase(),
     )
-    setMode(null)
-    setEditing(null)
-    showToast(`${data.name}'s access updated`, 'success')
+    if (emailTaken) {
+      showToast('An admin with this email already exists', 'danger')
+      return
+    }
+
+    setAdmins((prev) =>
+      prev.map((a) =>
+        a.id === editing.id
+          ? { ...a, ...data, email: data.email.trim(), name: data.name.trim() }
+          : a,
+      ),
+    )
+    closeForm()
+    showToast(`${data.name.trim()}'s access updated`, 'success')
+  }
+
+  const requestAction = (
+    admin: Admin,
+    action: ConfirmState['action'],
+  ) => {
+    if (isSelf(admin) && (action === 'deleteAdmin' || action === 'suspendAdmin')) {
+      showToast(
+        action === 'deleteAdmin'
+          ? "You can't remove your own admin account"
+          : "You can't suspend your own admin account",
+        'warning',
+      )
+      return
+    }
+    setConfirm({ action, admin })
   }
 
   const handleConfirm = () => {
@@ -94,12 +148,12 @@ const ManageAdminPage = () => {
       showToast(`${admin.name} removed from admins`, 'danger')
     } else if (action === 'suspendAdmin') {
       setAdmins((prev) =>
-        prev.map((a) => (a.id === admin.id ? { ...a, status: 'Suspended' } : a))
+        prev.map((a) => (a.id === admin.id ? { ...a, status: 'Suspended' } : a)),
       )
       showToast(`${admin.name} has been suspended`, 'warning')
     } else if (action === 'reactivateAdmin') {
       setAdmins((prev) =>
-        prev.map((a) => (a.id === admin.id ? { ...a, status: 'Active' } : a))
+        prev.map((a) => (a.id === admin.id ? { ...a, status: 'Active' } : a)),
       )
       showToast(`${admin.name} reactivated`, 'success')
     }
@@ -107,7 +161,8 @@ const ManageAdminPage = () => {
     setConfirm(null)
   }
 
-  const isSelf = (admin: Admin) => admin.email === user?.email
+  const isSelf = (admin: Admin) =>
+    !!user?.email && admin.email.toLowerCase() === user.email.toLowerCase()
 
   return (
     <div className="py-7 px-8">
@@ -115,14 +170,7 @@ const ManageAdminPage = () => {
         title="Manage Admin"
         subtitle="Create admins and control which modules each one can access"
         action={
-          <PrimaryButton
-            Icon={Plus}
-            label="Add Admin"
-            onClick={() => {
-              setEditing(null)
-              setMode('create')
-            }}
-          />
+          <PrimaryButton Icon={Plus} label="Add Admin" onClick={openCreate} />
         }
       />
 
@@ -188,11 +236,8 @@ const ManageAdminPage = () => {
                   key={admin.id}
                   admin={admin}
                   isSelf={isSelf(admin)}
-                  onEdit={() => {
-                    setEditing(admin)
-                    setMode('edit')
-                  }}
-                  onAction={(action) => setConfirm({ action, admin })}
+                  onEdit={() => openEdit(admin)}
+                  onAction={(action) => requestAction(admin, action)}
                 />
               ))}
             </tbody>
@@ -202,12 +247,10 @@ const ManageAdminPage = () => {
 
       {mode && (
         <AdminFormModal
+          key={`${mode}-${editing?.id ?? 'new'}`}
           mode={mode}
           initialData={editing ?? undefined}
-          onCancel={() => {
-            setMode(null)
-            setEditing(null)
-          }}
+          onCancel={closeForm}
           onSubmit={mode === 'edit' ? handleUpdate : handleCreate}
         />
       )}
@@ -317,8 +360,9 @@ const AdminRow = ({ admin, isSelf, onEdit, onAction }: AdminRowProps) => {
           {admin.status === 'Active' ? (
             <IconButton
               Icon={Lock}
-              tooltip="Suspend"
-              onClick={() => !isSelf && onAction('suspendAdmin')}
+              tooltip={isSelf ? "You can't suspend yourself" : 'Suspend'}
+              disabled={isSelf}
+              onClick={() => onAction('suspendAdmin')}
             />
           ) : (
             <IconButton
@@ -331,7 +375,8 @@ const AdminRow = ({ admin, isSelf, onEdit, onAction }: AdminRowProps) => {
             Icon={Trash2}
             tooltip={isSelf ? "You can't remove yourself" : 'Delete'}
             danger
-            onClick={() => !isSelf && onAction('deleteAdmin')}
+            disabled={isSelf}
+            onClick={() => onAction('deleteAdmin')}
           />
         </div>
       </td>
@@ -383,6 +428,7 @@ interface FilterPillProps {
 
 const FilterPill = ({ active, label, onClick }: FilterPillProps) => (
   <button
+    type="button"
     onClick={onClick}
     className="h-[40px] px-4 rounded-pill text-[13px] font-semibold cursor-pointer border transition-colors"
     style={{

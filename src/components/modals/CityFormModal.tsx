@@ -42,11 +42,13 @@ const CityFormModal = ({ onCancel, onSubmit, initial }: CityFormModalProps) => {
       activeHosts: toNum(activeHosts),
       joinedUsersWeek: toNum(joinedUsersWeek),
       flaggedPlans: initial?.flaggedPlans ?? 0,
+      competitionsActive: initial?.competitionsActive ?? 0,
       noShowRate7d: initial?.noShowRate7d ?? 0,
       cancellationRate7d: initial?.cancellationRate7d ?? 0,
       trend: initial?.trend ?? [],
       weakZones: initial?.weakZones ?? [],
       flaggedList: initial?.flaggedList ?? [],
+      competitionsList: initial?.competitionsList ?? [],
       notes: notes.trim() || undefined,
     })
   }

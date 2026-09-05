@@ -17,6 +17,7 @@ export const citiesSeed: CityOps[] = [
     activeHosts: 318,
     joinedUsersWeek: 2840,
     flaggedPlans: 2,
+    competitionsActive: 3,
     noShowRate7d: 6,
     cancellationRate7d: 4,
     trend: trend([4, 5, 4, 3, 6, 5, 4], [3, 4, 3, 2, 5, 4, 3]),
@@ -26,6 +27,11 @@ export const citiesSeed: CityOps[] = [
     ],
     flaggedList: [
       { id: 2, name: 'Coffee Brewing Workshop', host: 'Marcus Okonkwo', reason: 'Host reliability', date: 'Oct 29' },
+    ],
+    competitionsList: [
+      { id: 1, title: '5K Charity Run', host: 'Morning Runners', date: 'Oct 15', status: 'Upcoming' },
+      { id: 2, title: 'Hyde Park Relay', host: 'Urban Runners', date: 'Today', status: 'Live' },
+      { id: 3, title: 'Coffee Crawl Challenge', host: 'Coffee Culture', date: 'Oct 12', status: 'Completed' },
     ],
     notes: 'Strong growth across central zones. Two outer boroughs underperforming.',
   },
@@ -40,6 +46,7 @@ export const citiesSeed: CityOps[] = [
     activeHosts: 142,
     joinedUsersWeek: 1620,
     flaggedPlans: 5,
+    competitionsActive: 2,
     noShowRate7d: 14,
     cancellationRate7d: 9,
     trend: trend([10, 12, 14, 13, 16, 14, 12], [6, 8, 9, 10, 11, 9, 8]),
@@ -51,6 +58,10 @@ export const citiesSeed: CityOps[] = [
     flaggedList: [
       { id: 14, name: 'Saturday Salsa Social', host: 'Priya Sharma', reason: 'Host cancellation pattern', date: 'Oct 26' },
       { id: 15, name: 'Garden Sketching', host: 'Priya Sharma', reason: 'Host cancellation pattern', date: 'Oct 27' },
+    ],
+    competitionsList: [
+      { id: 4, title: 'IT Corridor Cycle Race', host: 'Bangalore Cyclists', date: 'Today', status: 'Live' },
+      { id: 5, title: 'Weekend Football Cup', host: 'Kickabout Club', date: 'Oct 18', status: 'Upcoming' },
     ],
     notes: 'No-show rate trending upward week-over-week. Investigate IT corridor zones.',
   },
@@ -65,6 +76,7 @@ export const citiesSeed: CityOps[] = [
     activeHosts: 402,
     joinedUsersWeek: 3210,
     flaggedPlans: 1,
+    competitionsActive: 4,
     noShowRate7d: 4,
     cancellationRate7d: 3,
     trend: trend([3, 4, 3, 4, 5, 4, 3], [2, 3, 2, 3, 4, 3, 2]),
@@ -72,6 +84,12 @@ export const citiesSeed: CityOps[] = [
       { name: 'Adachi', joinedThisWeek: 31, hostsActive: 3, trend: 'flat' },
     ],
     flaggedList: [],
+    competitionsList: [
+      { id: 6, title: 'Shibuya Night Run', host: 'Tokyo Pacers', date: 'Today', status: 'Live' },
+      { id: 7, title: 'Ramen Taste-Off', host: 'Foodies JP', date: 'Oct 16', status: 'Upcoming' },
+      { id: 8, title: 'Photo Walk Contest', host: 'Lens Club', date: 'Oct 20', status: 'Upcoming' },
+      { id: 9, title: 'Park Yoga Challenge', host: 'Zen Circle', date: 'Oct 10', status: 'Completed' },
+    ],
     notes: 'Best-performing market on platform.',
   },
   {
@@ -85,6 +103,7 @@ export const citiesSeed: CityOps[] = [
     activeHosts: 88,
     joinedUsersWeek: 920,
     flaggedPlans: 8,
+    competitionsActive: 0,
     noShowRate7d: 22,
     cancellationRate7d: 17,
     trend: trend([14, 16, 19, 21, 23, 22, 24], [10, 12, 14, 16, 17, 17, 18]),
@@ -98,6 +117,7 @@ export const citiesSeed: CityOps[] = [
       { id: 4, name: 'Tech Founders Meetup', host: 'Daniel Kim', reason: 'Host under T&S review', date: 'Oct 30' },
       { id: 41, name: 'Gangnam Coffee Chat', host: 'Daniel Kim', reason: 'Linked to banned host', date: 'Oct 28' },
     ],
+    competitionsList: [],
     notes: 'Banned host (Daniel Kim) created downstream churn. Recovery plan needed.',
   },
   {
@@ -111,6 +131,7 @@ export const citiesSeed: CityOps[] = [
     activeHosts: 110,
     joinedUsersWeek: 1180,
     flaggedPlans: 3,
+    competitionsActive: 1,
     noShowRate7d: 11,
     cancellationRate7d: 8,
     trend: trend([7, 9, 10, 11, 12, 11, 10], [5, 6, 7, 8, 9, 8, 7]),
@@ -120,6 +141,9 @@ export const citiesSeed: CityOps[] = [
     ],
     flaggedList: [
       { id: 6, name: 'Board Games Night', host: 'Zara Hassan', reason: 'Cancelled — venue', date: 'Oct 27' },
+    ],
+    competitionsList: [
+      { id: 10, title: 'Bosphorus Walking Cup', host: 'Istanbul Walkers', date: 'Oct 19', status: 'Upcoming' },
     ],
     notes: 'Ramadan calendar effects expected next month — monitor host activity.',
   },
@@ -134,6 +158,7 @@ export const citiesSeed: CityOps[] = [
     activeHosts: 22,
     joinedUsersWeek: 240,
     flaggedPlans: 4,
+    competitionsActive: 0,
     noShowRate7d: 19,
     cancellationRate7d: 15,
     trend: trend([12, 14, 17, 18, 20, 19, 18], [9, 11, 13, 14, 16, 15, 14]),
@@ -145,6 +170,7 @@ export const citiesSeed: CityOps[] = [
       { id: 31, name: 'Douro Valley Hike', host: 'Tomás Silva', reason: 'Host suspended', date: 'Mar 20' },
       { id: 32, name: 'Matosinhos Surf Sunrise', host: 'Tomás Silva', reason: 'Host suspended', date: 'Mar 26' },
     ],
+    competitionsList: [],
     notes: 'Suspended host (Tomás Silva) accounted for 30% of weekly hosted plans.',
   },
   {
@@ -158,6 +184,7 @@ export const citiesSeed: CityOps[] = [
     activeHosts: 76,
     joinedUsersWeek: 680,
     flaggedPlans: 1,
+    competitionsActive: 1,
     noShowRate7d: 7,
     cancellationRate7d: 5,
     trend: trend([5, 6, 5, 7, 8, 7, 6], [4, 4, 5, 5, 6, 5, 5]),
@@ -166,6 +193,9 @@ export const citiesSeed: CityOps[] = [
     ],
     flaggedList: [
       { id: 3, name: 'Weekend Hiking Trail', host: "Liam O'Brien", reason: 'Joining-restricted host', date: 'Oct 26' },
+    ],
+    competitionsList: [
+      { id: 11, title: 'Phoenix Park 10K', host: 'Trail Blazers', date: 'Today', status: 'Live' },
     ],
     notes: 'Stable. Watch host churn next month.',
   },
@@ -180,6 +210,7 @@ export const citiesSeed: CityOps[] = [
     activeHosts: 410,
     joinedUsersWeek: 3640,
     flaggedPlans: 3,
+    competitionsActive: 2,
     noShowRate7d: 8,
     cancellationRate7d: 6,
     trend: trend([6, 7, 8, 7, 9, 8, 7], [4, 5, 6, 5, 7, 6, 5]),
@@ -188,6 +219,10 @@ export const citiesSeed: CityOps[] = [
       { name: 'Bronx — South', joinedThisWeek: 51, hostsActive: 4, trend: 'down' },
     ],
     flaggedList: [],
+    competitionsList: [
+      { id: 12, title: 'Central Park Meetup Race', host: 'NYC Run Club', date: 'Today', status: 'Live' },
+      { id: 13, title: 'Brooklyn Food Battle', host: 'Taste NYC', date: 'Oct 22', status: 'Upcoming' },
+    ],
     notes: 'High volume; flagged plans within tolerance.',
   },
 ]

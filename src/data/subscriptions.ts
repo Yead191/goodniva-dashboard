@@ -11,6 +11,7 @@ export const subscriptionsSeed: Subscription[] = [
     limits: {
       weeklyPlanJoins: 3,
       monthlyPlansHosted: 0,
+      canCreatePlans: false,
       canCreateGroups: false,
       canCreateCompetitions: false,
       canCreateCommunities: false,
@@ -38,6 +39,7 @@ export const subscriptionsSeed: Subscription[] = [
     limits: {
       weeklyPlanJoins: UNLIMITED,
       monthlyPlansHosted: UNLIMITED,
+      canCreatePlans: true,
       canCreateGroups: true,
       canCreateCompetitions: true,
       canCreateCommunities: true,
@@ -64,6 +66,7 @@ export const subscriptionsSeed: Subscription[] = [
     limits: {
       weeklyPlanJoins: UNLIMITED,
       monthlyPlansHosted: UNLIMITED,
+      canCreatePlans: true,
       canCreateGroups: true,
       canCreateCompetitions: true,
       canCreateCommunities: true,

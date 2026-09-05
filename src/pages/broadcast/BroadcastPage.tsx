@@ -224,15 +224,15 @@ const NotificationPreview = ({ title, message, type }: { title: string; message:
   const cfg = typeConfig[type]
 
   return (
-    <div className="bg-surface rounded-[14px] p-[14px] flex gap-3 items-start shadow-[0_4px_12px_rgba(15,23,42,0.08)]">
+    <div className="bg-surface rounded-[14px] p-[14px] flex gap-3 items-start shadow-[0_4px_12px_rgba(15,23,42,0.08)] overflow-hidden">
       <div className="w-9 h-9 rounded-[10px] flex items-center justify-center shrink-0" style={{ background: cfg.bg, color: cfg.color }}>
         <cfg.Icon size={18} />
       </div>
-      <div className="flex-1 min-w-0">
-        <div className="text-[13px] font-bold text-ink-primary leading-snug mb-1">
+      <div className="flex-1 min-w-0 overflow-hidden">
+        <div className="text-[13px] font-bold text-ink-primary leading-snug mb-1 break-words [overflow-wrap:anywhere]">
           {title || 'Your notification title'}
         </div>
-        <div className="text-xs text-ink-secondary leading-relaxed">
+        <div className="text-xs text-ink-secondary leading-relaxed break-words [overflow-wrap:anywhere] whitespace-pre-wrap">
           {message || 'Your message will appear here as users see it.'}
         </div>
         <div className="text-[10px] text-ink-muted mt-[6px] font-semibold tracking-[0.3px]">GoodNiva</div>

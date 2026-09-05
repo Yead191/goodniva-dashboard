@@ -9,8 +9,9 @@ interface PlanLimitsEditorProps {
   canEdit?: boolean
 }
 
-/** Premium "creation" extras — gate who can create groups, competitions, etc. */
+/** Premium "creation" extras — gate who can create plans, groups, competitions, etc. */
 const CREATION_BOOLS: { key: keyof PlanLimits; label: string; description: string }[] = [
+  { key: 'canCreatePlans', label: 'Create plans', description: 'Allow creating new plans.' },
   { key: 'canCreateGroups', label: 'Create groups', description: 'Allow creating new groups.' },
   { key: 'canCreateCompetitions', label: 'Create competitions', description: 'Allow creating new competitions.' },
   { key: 'canCreateCommunities', label: 'Create communities', description: 'Allow creating new communities.' },
