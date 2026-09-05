@@ -260,6 +260,8 @@ export interface PlanLimits {
   weeklyPlanJoins: number
   /** Plans a user may host per month. -1 = unlimited. 0 = hosting disabled. */
   monthlyPlansHosted: number
+  /** Premium extra: may create plans. */
+  canCreatePlans: boolean
   /** Premium extra: may create groups. */
   canCreateGroups: boolean
   /** Premium extra: may create competitions. */
@@ -283,6 +285,7 @@ export const UNLIMITED = -1
 export const defaultPlanLimits: PlanLimits = {
   weeklyPlanJoins: 3,
   monthlyPlansHosted: 0,
+  canCreatePlans: false,
   canCreateGroups: false,
   canCreateCompetitions: false,
   canCreateCommunities: false,
@@ -517,6 +520,14 @@ export interface FlaggedPlanRef {
   date: string
 }
 
+export interface CityCompetitionRef {
+  id: number
+  title: string
+  host: string
+  date: string
+  status: 'Live' | 'Upcoming' | 'Completed'
+}
+
 export interface CityOps {
   id: number
   name: string
@@ -528,11 +539,14 @@ export interface CityOps {
   activeHosts: number
   joinedUsersWeek: number
   flaggedPlans: number
+  /** Competitions currently live or upcoming in this city. */
+  competitionsActive: number
   noShowRate7d: number
   cancellationRate7d: number
   trend: CityTrendPoint[]
   weakZones: WeakZone[]
   flaggedList: FlaggedPlanRef[]
+  competitionsList: CityCompetitionRef[]
   notes?: string
 }
 

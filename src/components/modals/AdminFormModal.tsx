@@ -37,7 +37,7 @@ const AdminFormModal = ({ mode, initialData, onCancel, onSubmit }: AdminFormModa
 
   const valid = useMemo(() => {
     if (!name.trim()) return false
-    if (!/^\S+@\S+\.\S+$/.test(email)) return false
+    if (!/^\S+@\S+\.\S+$/.test(email.trim())) return false
     if (!isSuperAdminRole && permissions.length === 0) return false
     return true
   }, [name, email, isSuperAdminRole, permissions])
@@ -47,7 +47,7 @@ const AdminFormModal = ({ mode, initialData, onCancel, onSubmit }: AdminFormModa
     onSubmit({
       name: name.trim(),
       email: email.trim(),
-      avatar,
+      avatar: avatar.trim() || `https://i.pravatar.cc/80?u=${Date.now()}`,
       role,
       permissions: isSuperAdminRole ? ALL_MODULE_KEYS : permissions,
       status: initialData?.status ?? 'Active',
@@ -198,13 +198,24 @@ const AdminFormModal = ({ mode, initialData, onCancel, onSubmit }: AdminFormModa
             </div>
           </div>
 
-          <div className="py-[18px] px-7 border-t border-line-light flex gap-[10px] justify-end shrink-0">
-            <SecondaryButton label="Cancel" onClick={onCancel} />
-            <PrimaryButton
-              label={isEdit ? 'Save Changes' : 'Create Admin'}
-              onClick={handleSubmit}
-              disabled={!valid}
-            />
+          <div className="py-[18px] px-7 border-t border-line-light shrink-0">
+            {!valid && (
+              <div className="mb-3 text-[12px] text-ink-muted text-right">
+                {!name.trim()
+                  ? 'Enter a full name to continue'
+                  : !/^\S+@\S+\.\S+$/.test(email.trim())
+                    ? 'Enter a valid email address'
+                    : 'Select at least one module, or choose Super Admin'}
+              </div>
+            )}
+            <div className="flex gap-[10px] justify-end">
+              <SecondaryButton label="Cancel" onClick={onCancel} />
+              <PrimaryButton
+                label={isEdit ? 'Save Changes' : 'Create Admin'}
+                onClick={handleSubmit}
+                disabled={!valid}
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -9,6 +9,7 @@ const cap = (n: number) => (n === UNLIMITED ? 'Unlimited' : String(n))
 const limitRows = (l: PlanLimits): { label: string; value: string }[] => [
   { label: 'Plan joins per week', value: cap(l.weeklyPlanJoins) },
   { label: 'Plans hosted per month', value: l.monthlyPlansHosted === 0 ? 'None' : cap(l.monthlyPlansHosted) },
+  { label: 'Create plans', value: l.canCreatePlans ? 'Yes' : 'No' },
   { label: 'Create groups', value: l.canCreateGroups ? 'Yes' : 'No' },
   { label: 'Create competitions', value: l.canCreateCompetitions ? 'Yes' : 'No' },
   { label: 'Create communities', value: l.canCreateCommunities ? 'Yes' : 'No' },

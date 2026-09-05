@@ -7,6 +7,7 @@ import {
   StickyNote,
   TrendingDown,
   TrendingUp,
+  Trophy,
   UserCheck,
   Users,
   X,
@@ -16,7 +17,7 @@ import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YA
 import { Badge, PrimaryButton } from '@/components/common'
 import { colors } from '@/utils/colors'
 import { healthStyle } from '@/pages/cityOps/CityOperationsPage'
-import type { CityOps, FlaggedPlanRef, WeakZone } from '@/types'
+import type { CityCompetitionRef, CityOps, FlaggedPlanRef, WeakZone } from '@/types'
 
 const CityDetailsDrawer = ({ city, onClose }: { city: CityOps; onClose: () => void }) => {
   const status = healthStyle(city.status)
@@ -55,6 +56,12 @@ const CityDetailsDrawer = ({ city, onClose }: { city: CityOps; onClose: () => vo
             <Stat Icon={UserCheck} label="Active hosts" value={city.activeHosts} />
             <Stat Icon={Users} label="Joined users (7d)" value={city.joinedUsersWeek.toLocaleString()} />
             <Stat Icon={Flag} label="Flagged plans" value={city.flaggedPlans} tone={city.flaggedPlans > 0 ? colors.danger : undefined} />
+            <Stat
+              Icon={Trophy}
+              label="Competitions"
+              value={city.competitionsActive}
+              tone={city.competitionsActive > 0 ? colors.primary : undefined}
+            />
           </div>
 
           <Section title="No-Show & Cancellation Trend (7d)" icon={TrendingUp}>
@@ -87,6 +94,10 @@ const CityDetailsDrawer = ({ city, onClose }: { city: CityOps; onClose: () => vo
                 </AreaChart>
               </ResponsiveContainer>
             </div>
+          </Section>
+
+          <Section title={`Competitions (${city.competitionsList.length})`} icon={Trophy}>
+            <CompetitionsList list={city.competitionsList} />
           </Section>
 
           <Section title={`Weak Activity Zones (${city.weakZones.length})`} icon={MapPinned} tone="warning">
@@ -225,6 +236,39 @@ const FlaggedList = ({ list }: { list: FlaggedPlanRef[] }) => {
           <Badge text={p.reason} bg={colors.dangerLight} color={colors.dangerText} />
         </div>
       ))}
+    </div>
+  )
+}
+
+const competitionStatusStyle = (status: CityCompetitionRef['status']) => {
+  if (status === 'Live') return { bg: colors.successLight, color: colors.successText }
+  if (status === 'Upcoming') return { bg: colors.infoLight, color: colors.infoText }
+  return { bg: colors.bgInput, color: colors.textSecondary }
+}
+
+const CompetitionsList = ({ list }: { list: CityCompetitionRef[] }) => {
+  if (list.length === 0) {
+    return <div className="text-[13px] text-ink-muted py-2">No competitions taking place in this city.</div>
+  }
+  return (
+    <div className="flex flex-col">
+      {list.map((c, i) => {
+        const style = competitionStatusStyle(c.status)
+        return (
+          <div
+            key={c.id}
+            className={`flex items-start justify-between gap-3 py-[10px] ${i === list.length - 1 ? '' : 'border-b border-line-light'}`}
+          >
+            <div className="min-w-0">
+              <div className="text-sm font-semibold text-ink-primary truncate">{c.title}</div>
+              <div className="text-[12px] text-ink-secondary mt-[2px]">
+                {c.host} · {c.date}
+              </div>
+            </div>
+            <Badge text={c.status} bg={style.bg} color={style.color} />
+          </div>
+        )
+      })}
     </div>
   )
 }

@@ -59,13 +59,22 @@ interface IconButtonProps {
   tooltip?: string
   onClick?: () => void
   danger?: boolean
+  disabled?: boolean
 }
 
-export const IconButton = ({ Icon, tooltip, onClick, danger }: IconButtonProps) => (
+export const IconButton = ({ Icon, tooltip, onClick, danger, disabled }: IconButtonProps) => (
   <button
-    onClick={onClick}
+    type="button"
+    onClick={disabled ? undefined : onClick}
     title={tooltip}
-    className={`w-[34px] h-[34px] rounded-lg border-none cursor-pointer flex items-center justify-center transition-all duration-150 bg-transparent hover:bg-surface-input ${danger ? 'text-danger hover:bg-danger-light' : 'text-ink-secondary'}`}
+    disabled={disabled}
+    className={`w-[34px] h-[34px] rounded-lg border-none flex items-center justify-center transition-all duration-150 bg-transparent ${
+      disabled
+        ? 'opacity-40 cursor-not-allowed text-ink-muted'
+        : danger
+          ? 'cursor-pointer text-danger hover:bg-danger-light'
+          : 'cursor-pointer text-ink-secondary hover:bg-surface-input'
+    }`}
   >
     <Icon size={16} />
   </button>

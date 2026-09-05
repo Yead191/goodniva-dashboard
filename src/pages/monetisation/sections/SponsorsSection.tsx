@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { X, Check, Pause, Play, Plus, Ban, Edit2, Zap, CheckCircle2, XCircle, Radio } from 'lucide-react'
+import { X, Check, Pause, Play, Plus, Ban, Edit2, Zap, Trash2, CheckCircle2, XCircle, Radio } from 'lucide-react'
 import { Card, Badge, IconButton, PrimaryButton, DangerButton, Toggle, FieldWithLabel, PillInput, SelectPill } from '@/components/common'
 import ImageUpload from '@/components/ImageUpload'
+import ConfirmDialog from '@/components/modals/ConfirmDialog'
 import { colors } from '@/utils/colors'
 import { useMonetisation } from '@/context/MonetisationContext'
 import { useToast } from '@/context/ToastContext'
@@ -38,6 +39,7 @@ const SponsorsSection = () => {
   const { showToast } = useToast()
   const [creating, setCreating] = useState(false)
   const [editing, setEditing] = useState<Sponsor | null>(null)
+  const [deleting, setDeleting] = useState<Sponsor | null>(null)
 
   const packageName = (id?: number) => packages.find((p) => p.id === id)?.name
 
@@ -62,6 +64,14 @@ const SponsorsSection = () => {
     }
     setCreating(false)
     setEditing(null)
+  }
+
+  const handleDelete = () => {
+    if (!deleting || !canEdit) return
+    setSponsors((prev) => prev.filter((s) => s.id !== deleting.id))
+    audit('Partners', 'Deleted partner', deleting.name)
+    showToast(`${deleting.name} deleted`, 'danger')
+    setDeleting(null)
   }
 
   return (
@@ -97,6 +107,12 @@ const SponsorsSection = () => {
                   {s.status === 'Approved' && <IconButton Icon={Zap} tooltip="Activate" onClick={() => update(s.id, 'Active', 'Activate')} />}
                   {s.status === 'Active' && <IconButton Icon={Pause} tooltip="Pause" onClick={() => update(s.id, 'Paused', 'Pause')} />}
                   {s.status === 'Paused' && <IconButton Icon={Play} tooltip="Resume" onClick={() => update(s.id, 'Active', 'Resume')} />}
+                  <IconButton
+                    Icon={Trash2}
+                    tooltip="Delete"
+                    danger
+                    onClick={() => canEdit && setDeleting(s)}
+                  />
                 </div>
               </Td>
             </tr>
@@ -110,6 +126,15 @@ const SponsorsSection = () => {
           packages={packages}
           onCancel={() => { setCreating(false); setEditing(null) }}
           onSubmit={(data) => handleSave(data, editing?.id)}
+        />
+      )}
+
+      {deleting && (
+        <ConfirmDialog
+          action="deletePartner"
+          userName={deleting.tradingName || deleting.name}
+          onCancel={() => setDeleting(null)}
+          onConfirm={handleDelete}
         />
       )}
     </div>

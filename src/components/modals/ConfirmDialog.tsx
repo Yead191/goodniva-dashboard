@@ -30,6 +30,7 @@ export type ConfirmAction =
   | 'deleteAdmin'
   | 'suspendAdmin'
   | 'reactivateAdmin'
+  | 'deletePartner'
   | 'deleteCity'
   | 'cancelSubscription'
   | 'refundSubscription'
@@ -210,6 +211,12 @@ const ConfirmDialog = ({ action, userName, onCancel, onConfirm }: ConfirmDialogP
       title: 'Reactivate Admin?',
       message: <>Restore admin access for <strong>{userName}</strong>? Their previous permissions will be reinstated.</>,
       confirmLabel: 'Yes, Reactivate', confirmColor: colors.success, confirmHover: '#059669',
+    },
+    deletePartner: {
+      Icon: Trash2, iconBg: colors.dangerLight, iconColor: colors.danger,
+      title: 'Delete Partner?',
+      message: <>Are you sure you want to delete this partner?</>,
+      confirmLabel: 'Yes, Delete', confirmColor: colors.danger, confirmHover: '#DC2626',
     },
     deleteCity: {
       Icon: Trash2, iconBg: colors.dangerLight, iconColor: colors.danger,

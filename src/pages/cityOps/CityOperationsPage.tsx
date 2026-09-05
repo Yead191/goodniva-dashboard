@@ -11,6 +11,7 @@ import {
   Trash2,
   TrendingDown,
   TrendingUp,
+  Trophy,
   UserCheck,
   Users,
 } from 'lucide-react'
@@ -223,10 +224,11 @@ const CityCard = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-2 mb-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
           <Metric Icon={CalendarDays} label="Plans today" value={city.plansToday} />
           <Metric Icon={UserCheck} label="Active hosts" value={city.activeHosts} />
           <Metric Icon={Users} label="Joined (7d)" value={city.joinedUsersWeek.toLocaleString()} />
+          <Metric Icon={Trophy} label="Competitions" value={city.competitionsActive} />
         </div>
 
         <div className="flex items-center justify-between text-[12px] text-ink-secondary mb-2">

@@ -41,6 +41,7 @@ export const defaultPricingConfig: PricingConfig = {
   trialLimits: {
     weeklyPlanJoins: 10,
     monthlyPlansHosted: 2,
+    canCreatePlans: true,
     canCreateGroups: true,
     canCreateCompetitions: false,
     canCreateCommunities: false,
